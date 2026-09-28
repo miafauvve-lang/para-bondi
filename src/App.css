@@ -1,249 +1,535 @@
-body {
-  margin: 0;
-  font-family: Arial, Helvetica, sans-serif;
-  background: #f4e6c9;
-  color: #1f1f1f;
-}
-
 #root {
   min-height: 100vh;
 }
 
-.start-screen {
-  min-height: 100vh;
+/* ---------- Logo ---------- */
+
+.logo {
+  margin: 0;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
-  text-align: center;
-  padding: 70px 40px 0;
-  box-sizing: border-box;
+  font-weight: 800;
+  line-height: 0.95;
+  color: #ffffff;
+  letter-spacing: 0.01em;
 }
 
-.start-screen h1 {
-  font-size: 64px;
-  line-height: 1.1;
-  margin: 0 0 25px 0;
+.logo-bondi {
+  color: var(--amarillo);
 }
 
-.start-screen p {
-  font-size: 22px;
-  margin: 0 0 35px 0;
+.logo-grande {
+  font-size: clamp(56px, 8vw, 104px);
 }
+
+.logo-grande span:first-child {
+  font-size: 0.72em;
+}
+
+.logo-chico {
+  font-size: 20px;
+}
+
+/* ---------- Botones ---------- */
 
 .game-button {
-  background: #ffd84d;
-  border: 3px solid #1f1f1f;
-  border-radius: 14px;
-  padding: 14px 28px;
-  font-size: 22px;
-  font-weight: bold;
+  font-family: inherit;
+  font-weight: 800;
+  font-size: 20px;
+  letter-spacing: 0.03em;
+  white-space: pre;
+  border: 3px solid var(--azul-oscuro);
+  border-radius: 12px;
+  padding: 14px 30px;
   cursor: pointer;
-  transition: transform 0.2s;
+  box-shadow: 0 6px 0 var(--azul-oscuro);
+  transition: transform 0.1s, box-shadow 0.1s;
 }
 
 .game-button:hover {
-  transform: scale(1.05);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 0 var(--azul-oscuro);
 }
 
-.city {
-  width: 100%;
-  max-width: 900px;
-  margin-top: 50px;
+.game-button:active {
+  transform: translateY(4px);
+  box-shadow: 0 2px 0 var(--azul-oscuro);
 }
 
-.buildings {
-  height: 90px;
+.game-button:focus-visible {
+  outline: 4px solid var(--amarillo);
+  outline-offset: 3px;
+}
+
+.game-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: 0 6px 0 var(--azul-oscuro);
+}
+
+.game-button-principal {
+  background: var(--rojo);
+  color: #ffffff;
+}
+
+.game-button-saltar {
+  background: var(--amarillo);
+  color: var(--azul-oscuro);
+}
+
+.game-button-secundario {
+  background: none;
+  border: none;
+  box-shadow: none;
+  color: var(--azul-oscuro);
+  font-size: 14px;
+  padding: 8px 12px;
+  text-decoration: underline;
+}
+
+.game-button-secundario:hover,
+.game-button-secundario:active {
+  box-shadow: none;
+}
+
+.hint {
+  font-size: 14px;
+  margin: 0;
+  color: var(--gris);
+}
+
+/* ---------- Portada (pantalla de inicio) ---------- */
+
+.portada {
+  position: relative;
+  min-height: 100vh;
   display: flex;
-  justify-content: space-around;
-  align-items: flex-end;
-  font-size: 70px;
+  align-items: center;
+  background-size: cover;
+  background-position: 70% center;
 }
 
-.sidewalk {
-  height: 80px;
-  background: #bdbdbd;
-  border-top: 4px solid #333;
-  border-bottom: 4px solid #333;
+/* Degradé azul sobre la ilustración, como en el mockup */
+.portada::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    rgba(16, 42, 67, 0.97) 0%,
+    rgba(16, 42, 67, 0.88) 32%,
+    rgba(16, 42, 67, 0) 62%
+  );
+}
+
+.portada-contenido {
   position: relative;
-  font-size: 45px;
+  max-width: 520px;
+  padding: 48px 6vw;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
 }
 
-.player {
-  position: absolute;
-  left: 12%;
-  bottom: 10px;
+.barrita {
+  width: 72px;
+  height: 8px;
+  border-radius: 4px;
+  background: var(--amarillo);
+  margin-bottom: 22px;
 }
 
-.mate {
-  position: absolute;
-  left: 48%;
-  bottom: 10px;
-  font-size: 35px;
+.bajada {
+  color: #ffffff;
+  font-size: 24px;
+  font-weight: 800;
+  line-height: 1.3;
+  margin: 24px 0 18px;
 }
 
-.bus-stop {
-  position: absolute;
-  right: 12%;
-  bottom: 8px;
+.pildora {
+  background: var(--crema);
+  color: var(--azul-oscuro);
+  font-size: 15px;
+  font-weight: 800;
+  border-radius: 999px;
+  padding: 8px 18px;
+  margin: 0 0 32px;
 }
 
-.street {
-  height: 120px;
-  background: #444;
-  position: relative;
-  overflow: hidden;
-}
-
-.street-line {
-  position: absolute;
-  top: 57px;
-  width: 100%;
-  border-top: 5px dashed #f4e6c9;
-}
-
-.bus {
-  position: absolute;
-  right: 8%;
-  bottom: 20px;
-  font-size: 65px;
-}
 /* ---------- Formulario del nombre ---------- */
 
 .name-form {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-start;
   gap: 12px;
 }
 
 .name-form label {
-  font-size: 20px;
-  font-weight: bold;
+  color: var(--crema);
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
 .name-form input {
-  font-size: 22px;
+  font-family: inherit;
+  font-size: 20px;
+  font-weight: 700;
   padding: 12px 16px;
-  width: 280px;
-  max-width: 80vw;
-  border: 3px solid #1f1f1f;
-  border-radius: 14px;
-  background: #fffaf0;
-  color: #1f1f1f;
-  text-align: center;
+  width: 300px;
+  max-width: 100%;
+  border: 3px solid var(--azul-oscuro);
+  border-radius: 12px;
+  background: var(--crema);
+  color: var(--azul-oscuro);
+  margin-bottom: 8px;
 }
 
 .name-form input:focus {
-  outline: 4px solid #ffd84d;
+  outline: 4px solid var(--amarillo);
 }
 
-.start-screen .hint,
-.hint {
-  font-size: 16px;
-  margin: 0;
-  color: #6b5a3a;
-}
-
-.game-button:disabled {
-  opacity: 0.45;
-  cursor: not-allowed;
-  transform: none;
+.name-form .hint {
+  color: var(--crema-oscura);
+  margin-top: 6px;
 }
 
 /* ---------- Nivel 1 ---------- */
 
-.level {
-  padding-top: 30px;
+.pantalla-juego {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--azul-oscuro);
 }
 
-.level h1 {
-  font-size: 44px;
-  margin-bottom: 10px;
-}
-
-.start-screen .cheer {
-  font-size: 30px;
-  font-weight: bold;
-  margin: 0 0 15px 0;
-}
-
-.hud {
+.barra-juego {
   display: flex;
   align-items: center;
+  gap: 24px;
+  padding: 12px 24px;
+  flex-wrap: wrap;
+}
+
+.chips {
+  display: flex;
   gap: 12px;
-  width: 100%;
-  max-width: 900px;
-  font-size: 24px;
+  flex-wrap: wrap;
 }
 
-.progress {
-  flex: 1;
-  height: 18px;
-  background: #fffaf0;
-  border: 3px solid #1f1f1f;
+.chip {
+  display: flex;
+  flex-direction: column;
+  background: var(--crema);
+  border: 3px solid var(--azul-oscuro);
+  outline: 2px solid var(--crema);
   border-radius: 10px;
-  overflow: hidden;
+  padding: 4px 16px 6px;
+  min-width: 120px;
 }
 
-.progress-fill {
-  height: 100%;
-  background: #ffd84d;
+.chip-verde {
+  background: var(--verde-agua);
+  outline-color: var(--verde-agua);
 }
 
-.level .city {
-  margin-top: 20px;
+.chip-titulo {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+}
+
+.chip-valor {
+  font-size: 20px;
+  font-weight: 800;
+}
+
+.corazones {
+  display: flex;
+  gap: 8px;
+}
+
+.corazones .perdido {
+  opacity: 0.2;
+}
+
+.chip-meta {
+  margin-left: auto;
+  background: var(--rojo);
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  border-radius: 10px;
+  padding: 14px 24px;
+}
+
+.escena-marco {
+  flex: 1;
+  display: grid;
+  place-items: center;
+}
+
+/* La escena mantiene la proporción 2:1 y todo lo de adentro se mide en
+   "cqw" (1% del ancho de la escena), así se ve igual en cualquier pantalla. */
+.escena {
+  position: relative;
+  width: min(100%, calc((100vh - 170px) * 2));
+  aspect-ratio: 2 / 1;
   overflow: hidden;
+  container-type: inline-size;
   cursor: pointer;
   user-select: none;
   touch-action: manipulation;
+  background: linear-gradient(#27a7e7 0%, #8fd3f4 55%, #cfeaf5 60%);
 }
 
-/* Los edificios se desplazan para que parezca que corrés */
-.buildings {
-  overflow: hidden;
+.capa {
+  position: absolute;
+  left: 0;
+  width: 100%;
 }
 
-.buildings-track {
+.nubes {
+  top: 4%;
+  height: 30%;
+  background:
+    radial-gradient(ellipse 7cqw 2.6cqw at 14% 40%, #fff 98%, transparent) ,
+    radial-gradient(ellipse 5cqw 2.4cqw at 19% 30%, #fff 98%, transparent),
+    radial-gradient(ellipse 8cqw 2.4cqw at 62% 60%, #fff 98%, transparent),
+    radial-gradient(ellipse 5cqw 2.2cqw at 67% 48%, #fff 98%, transparent);
+}
+
+/* Las "pistas" tienen el dibujo repetido dos veces y se corren a la izquierda */
+.pista {
   display: flex;
   width: 200%;
-  justify-content: space-around;
-  animation: mover-edificios 8s linear infinite;
 }
 
-@keyframes mover-edificios {
+.pista svg {
+  display: block;
+  width: 50%;
+  flex: none;
+}
+
+.skyline {
+  bottom: 62%;
+  animation: correr-pista 40s linear infinite;
+}
+
+.barrio {
+  bottom: 40%;
+  animation: correr-pista 10s linear infinite;
+}
+
+.barrio svg {
+  height: 26.2cqw;
+}
+
+@keyframes correr-pista {
   from { transform: translateX(0); }
   to { transform: translateX(-50%); }
 }
 
-.level .buildings {
-  display: block;
-  height: 150px; /* más alto, así hay lugar para el salto */
-  padding-top: 60px;
-  box-sizing: border-box;
+/* Vereda de baldosas: se mueve a la misma velocidad que los obstáculos */
+.vereda {
+  top: 60%;
+  height: 17%;
+  background-color: #e8d5b0;
+  background-image:
+    linear-gradient(90deg, #c9b284 0.25cqw, transparent 0.25cqw),
+    linear-gradient(#c9b284 0.25cqw, transparent 0.25cqw);
+  background-size: 5cqw 4.25cqw;
+  border-top: 0.4cqw solid #c9b284;
+  animation: correr-vereda 0.25s linear infinite;
 }
 
-.obstacle {
+@keyframes correr-vereda {
+  from { background-position: 0 0; }
+  to { background-position: -5cqw 0; }
+}
+
+/* Cordón amarillo */
+.cordon {
+  top: 77%;
+  height: 3.5%;
+  background-color: #e9b949;
+  background-image: linear-gradient(90deg, var(--azul-oscuro) 0.3cqw, transparent 0.3cqw);
+  background-size: 10cqw 100%;
+  border-top: 0.3cqw solid var(--azul-oscuro);
+  border-bottom: 0.3cqw solid var(--azul-oscuro);
+  animation: correr-cordon 0.5s linear infinite;
+}
+
+@keyframes correr-cordon {
+  from { background-position: 0 0; }
+  to { background-position: -10cqw 0; }
+}
+
+.calle {
+  top: 80.5%;
+  bottom: 0;
+  background: #4a5563;
+}
+
+.linea-calle {
   position: absolute;
-  bottom: 10px;
-  font-size: 38px;
+  top: 55%;
+  width: 100%;
+  height: 0.6cqw;
+  background: repeating-linear-gradient(90deg, #f2efe6 0 5cqw, transparent 5cqw 8cqw);
+  animation: correr-linea 0.4s linear infinite;
 }
 
-.level .player {
+@keyframes correr-linea {
+  from { background-position: 0 0; }
+  to { background-position: -8cqw 0; }
+}
+
+/* Personajes y objetos: se ubican por su centro */
+.sprite {
+  position: absolute;
+  translate: -50% 0;
+}
+
+.sprite svg {
+  display: block;
+  width: 100%;
+  overflow: visible;
+}
+
+.parada {
+  bottom: 37%;
+  width: 5.5cqw;
+  z-index: 1;
+}
+
+.obstaculo {
+  bottom: 27%;
+  width: 7.5cqw;
   z-index: 2;
 }
 
-.player.jumping {
+.corredora {
+  bottom: 26%;
+  width: 12cqw;
+  z-index: 3;
+}
+
+.colectivo {
+  bottom: 0.5%;
+  width: 29cqw;
+  z-index: 4;
+  transition: transform 0.9s ease-in;
+}
+
+.colectivo.se-va {
+  transform: translateX(90cqw);
+}
+
+.aliento {
+  position: absolute;
+  top: 3cqw;
+  left: 3cqw;
+  margin: 0;
+  background: var(--crema);
+  border: 0.3cqw solid var(--azul-oscuro);
+  border-radius: 1.2cqw;
+  padding: 0.6cqw 1.6cqw;
+  font-size: clamp(14px, 2cqw, 26px);
+  font-weight: 800;
+  box-shadow: 0 0.5cqw 0 var(--azul-oscuro);
+}
+
+/* --- Animación de la corredora (mira y corre hacia la derecha) --- */
+
+.corredora .pierna,
+.corredora .brazo,
+.corredora .colita {
+  transform-box: view-box;
+}
+
+.corredora .pierna {
+  transform-origin: 54px 84px;
+  animation: paso 0.36s ease-in-out infinite alternate;
+}
+
+.corredora .pierna-atras {
+  animation-delay: -0.36s;
+}
+
+@keyframes paso {
+  from { transform: rotate(-40deg); }
+  to { transform: rotate(34deg); }
+}
+
+.corredora .brazo {
+  transform-origin: 57px 50px;
+  animation: braceo 0.36s ease-in-out infinite alternate;
+}
+
+.corredora .brazo-adelante {
+  animation-delay: -0.36s;
+}
+
+@keyframes braceo {
+  from { transform: rotate(-30deg); }
+  to { transform: rotate(55deg); }
+}
+
+.corredora .colita {
+  transform-origin: 47px 20px;
+  animation: flamear 0.18s ease-in-out infinite alternate;
+}
+
+@keyframes flamear {
+  from { transform: rotate(-6deg); }
+  to { transform: rotate(8deg); }
+}
+
+.corredora .corredora-dibujo {
+  animation: rebote 0.18s ease-in-out infinite alternate;
+}
+
+@keyframes rebote {
+  from { transform: translateY(0); }
+  to { transform: translateY(-3%); }
+}
+
+.rayas-velocidad {
+  animation: parpadeo 0.3s steps(2) infinite;
+}
+
+@keyframes parpadeo {
+  from { opacity: 1; }
+  to { opacity: 0.3; }
+}
+
+.corredora.jumping {
   animation: saltar 0.8s ease-out;
+}
+
+.corredora.jumping .pierna-adelante {
+  animation: none;
+  transform: rotate(-55deg);
+}
+
+.corredora.jumping .pierna-atras {
+  animation: none;
+  transform: rotate(40deg);
 }
 
 @keyframes saltar {
   0% { transform: translateY(0); }
-  45% { transform: translateY(-85px); }
+  45% { transform: translateY(-15cqw); }
   100% { transform: translateY(0); }
 }
 
-.player.hit {
+.corredora.hit .corredora-dibujo {
   animation: golpe 0.15s steps(2) infinite;
 }
 
@@ -252,67 +538,209 @@ body {
   to { opacity: 0.2; }
 }
 
-/* La línea de la calle se mueve */
-.street-line.moving {
-  border-top: none;
-  height: 5px;
-  background: repeating-linear-gradient(
-    to right,
-    #f4e6c9 0 30px,
-    transparent 30px 55px
-  );
-  background-size: 55px 5px;
-  animation: mover-linea 0.5s linear infinite;
+/* El perro mueve la cola y el colectivo gira las ruedas */
+.obstaculo-perro .cola {
+  transform-box: view-box;
+  transform-origin: 54px 36px;
+  animation: flamear 0.2s ease-in-out infinite alternate;
 }
 
-@keyframes mover-linea {
-  from { background-position: 0 0; }
-  to { background-position: -55px 0; }
+.rueda {
+  transform-box: view-box;
+  animation: girar 0.5s linear infinite;
 }
 
-.controls {
-  margin: 25px 0 30px;
+@keyframes girar {
+  to { transform: rotate(360deg); }
+}
+
+/* Cuando termina el nivel, todo se queda quieto */
+.pantalla-juego.terminado * {
+  animation-play-state: paused !important;
+}
+
+/* --- Barra de abajo: botón de salto y recorrido --- */
+
+.barra-inferior {
   display: flex;
-  flex-direction: column;
+  align-items: center;
+  gap: 28px;
+  padding: 14px 24px 18px;
+  flex-wrap: wrap;
+}
+
+.barra-inferior .hint {
+  width: 100%;
+  color: var(--crema-oscura);
+}
+
+.recorrido {
+  flex: 1;
+  min-width: 220px;
+  display: flex;
   align-items: center;
   gap: 12px;
+  color: var(--crema);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+}
+
+.progress {
+  position: relative;
+  flex: 1;
+  height: 18px;
+  background: var(--crema);
+  border: 3px solid var(--azul-oscuro);
+  outline: 2px solid var(--crema);
+  border-radius: 999px;
+}
+
+.progress-fill {
+  height: 100%;
+  background: var(--rojo);
+  border-radius: 999px;
+}
+
+.progress-marca {
+  position: absolute;
+  top: 50%;
+  width: 24px;
+  height: 24px;
+  translate: -50% -50%;
+  background: var(--amarillo);
+  border: 3px solid var(--azul-oscuro);
+  border-radius: 50%;
 }
 
 /* ---------- Pantalla de resultado ---------- */
 
-.result h2 {
-  font-size: 36px;
-  margin: 10px 0 15px;
+.pantalla-resultado {
+  position: relative;
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 24px 16px;
+  background-size: cover;
+  background-position: center;
+  overflow: hidden;
 }
 
-.start-screen .result-emoji {
-  font-size: 80px;
-  margin: 10px 0 0;
+/* La misma ilustración de la portada, desenfocada y oscurecida */
+.pantalla-resultado::before {
+  content: "";
+  position: absolute;
+  inset: -20px;
+  background: inherit;
+  filter: blur(6px) brightness(0.55);
+}
+
+.tarjeta-resultado {
+  position: relative;
+  width: 100%;
+  max-width: 560px;
+  background: var(--crema);
+  border: 6px solid var(--amarillo);
+  outline: 3px solid var(--azul-oscuro);
+  border-radius: 24px;
+  padding: 32px 36px 24px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.pildora-verde {
+  background: var(--verde-agua);
+  border-radius: 999px;
+  padding: 8px 18px;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+}
+
+.tarjeta-resultado h2 {
+  color: var(--rojo);
+  font-size: clamp(32px, 6vw, 46px);
+  font-weight: 800;
+  margin: 18px 0 10px;
+}
+
+.tarjeta-resultado p {
+  font-size: 17px;
+  font-weight: 700;
+  line-height: 1.4;
+  margin: 0;
+}
+
+.resultado-colectivo {
+  width: 240px;
+  max-width: 80%;
+  margin: 22px 0 26px;
+}
+
+.resultado-colectivo svg {
+  display: block;
+  width: 100%;
+}
+
+.resultado-colectivo.se-va {
+  animation: irse 1.4s ease-in 0.3s both;
+}
+
+@keyframes irse {
+  from { transform: translateX(0); opacity: 1; }
+  to { transform: translateX(35%); opacity: 0.2; }
 }
 
 .result-buttons {
   display: flex;
-  gap: 16px;
-  flex-wrap: wrap;
-  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
 }
 
 /* ---------- Celulares ---------- */
 
-@media (max-width: 600px) {
-  .start-screen {
-    padding: 40px 16px 0;
+@media (max-width: 700px) {
+  .portada::before {
+    background: linear-gradient(rgba(16, 42, 67, 0.92), rgba(16, 42, 67, 0.75));
   }
 
-  .start-screen h1 {
-    font-size: 40px;
+  .portada-contenido {
+    padding: 40px 16px;
   }
 
-  .sidewalk {
-    font-size: 34px;
+  .bajada {
+    font-size: 20px;
   }
 
-  .obstacle {
-    font-size: 30px;
+  .barra-juego {
+    gap: 12px;
+    padding: 10px 16px;
+  }
+
+  .chip {
+    min-width: 0;
+    padding: 3px 10px 5px;
+  }
+
+  .chip-valor {
+    font-size: 15px;
+  }
+
+  .chip-meta {
+    margin-left: 0;
+    padding: 8px 14px;
+    font-size: 12px;
+  }
+
+  .barra-inferior {
+    padding: 12px 16px 16px;
+    gap: 16px;
+  }
+
+  .tarjeta-resultado {
+    padding: 26px 18px 18px;
   }
 }

@@ -10,7 +10,8 @@ export const VELOCIDAD = 0.6 // cuánto se mueven los obstáculos en cada tick
 export const DURACION_SALTO = 800 // cuánto tiempo queda en el aire (ms)
 export const DURACION_GOLPE = 700 // cuánto parpadea después de chocar (ms)
 
-const TIPOS_OBSTACULO = ["🧉", "🐕", "🚧", "🛴"]
+// Cada tipo tiene su dibujo en components/ilustraciones/Obstaculo.jsx
+const TIPOS_OBSTACULO = ["baldosa", "perro", "basura", "cono"]
 
 export const estadoInicial = {
   tiempo: 0,
@@ -65,8 +66,8 @@ export function actualizarNivel(estado, accion) {
     let siguienteId = estado.siguienteId
 
     if (tiempo >= proximoObstaculo && progreso < 88) {
-      const emoji = TIPOS_OBSTACULO[Math.floor(Math.random() * TIPOS_OBSTACULO.length)]
-      obstaculos.push({ id: siguienteId, x: 100, emoji })
+      const tipo = TIPOS_OBSTACULO[Math.floor(Math.random() * TIPOS_OBSTACULO.length)]
+      obstaculos.push({ id: siguienteId, x: 100, tipo })
       siguienteId = siguienteId + 1
       // El próximo aparece entre 1,1 y 2 segundos después
       proximoObstaculo = tiempo + 1100 + Math.random() * 900

@@ -1,26 +1,33 @@
 import GameButton from "./GameButton"
-import GameHeader from "./GameHeader"
+import Colectivo from "./ilustraciones/Colectivo"
+import portada from "../assets/portada.jpg"
 
 function ResultScreen({ nombre, resultado, onReintentar, onCambiarNombre }) {
   const gano = resultado === "ganaste"
 
   return (
-    <div className="start-screen result">
-      <GameHeader />
+    <div className="pantalla-resultado" style={{ backgroundImage: `url(${portada})` }}>
+      <div className="tarjeta-resultado">
+        <span className="pildora-verde">
+          {gano ? "NIVEL 1 COMPLETADO ✓" : "NIVEL 1 · PALERMO"}
+        </span>
 
-      <p className="result-emoji">{gano ? "🚌🙋‍♀️" : "🚌💨"}</p>
+        <h2>{gano ? "¡LO ALCANZASTE!" : "¡SE TE FUE EL BONDI!"}</h2>
 
-      <h2>{gano ? `¡Llegaste, ${nombre}!` : `¡Se te fue el bondi, ${nombre}!`}</h2>
+        <p>
+          {gano
+            ? `¡Bien, ${nombre}! El chofer estaba de buen humor. Milagro porteño desbloqueado.`
+            : `Te quedaste sin energía, ${nombre}. Tranqui, en 20 minutos pasa otro... o no.`}
+        </p>
 
-      <p>
-        {gano
-          ? "Le hiciste señas al chofer y frenó. ¡Hoy no llegás tarde!"
-          : "Te quedaste sin vidas. Tranqui, en 20 minutos pasa otro... o no."}
-      </p>
+        <div className={`resultado-colectivo ${gano ? "" : "se-va"}`}>
+          <Colectivo />
+        </div>
 
-      <div className="result-buttons">
-        <GameButton texto="Jugar de nuevo" onClick={onReintentar} />
-        <GameButton texto="Cambiar nombre" onClick={onCambiarNombre} />
+        <div className="result-buttons">
+          <GameButton texto={gano ? "JUGAR DE NUEVO  →" : "REINTENTAR  →"} onClick={onReintentar} />
+          <GameButton texto="CAMBIAR NOMBRE" variante="secundario" onClick={onCambiarNombre} />
+        </div>
       </div>
     </div>
   )
