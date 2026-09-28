@@ -5,16 +5,19 @@ import Corredora from "./ilustraciones/Corredora"
 import Colectivo from "./ilustraciones/Colectivo"
 import Parada from "./ilustraciones/Parada"
 import Obstaculo from "./ilustraciones/Obstaculo"
+import Mate from "./ilustraciones/Mate"
 import Barrio from "./ilustraciones/Barrio"
 import Skyline from "./ilustraciones/Skyline"
 import {
   TICK,
   DURACION_NIVEL,
-  VIDAS_INICIALES,
+  DURACION_SALTO,
+  VIDAS_MAXIMAS,
   JUGADOR_X,
   estadoInicial,
   actualizarNivel,
   estaEnElAire,
+  esInmune,
 } from "../game/nivel1"
 
 function Level1({ nombre, onTerminar }) {
@@ -51,7 +54,8 @@ function Level1({ nombre, onTerminar }) {
   }
 
   const enElAire = estaEnElAire(estado)
-  const golpeado = estado.tiempo < estado.golpeHasta
+  const golpeado = esInmune(estado) // parpadea mientras dura la inmunidad
+  const mostrarMensaje = estado.tiempo < estado.mensajeHasta
 
   // Los segundos que faltan, para mostrarlos como en el mockup (00:25)
   const segundosRestantes = Math.max(0, Math.ceil((DURACION_NIVEL - estado.tiempo) / 1000))
@@ -80,11 +84,13 @@ function Level1({ nombre, onTerminar }) {
             <span className="chip-titulo">TIEMPO</span>
             <span className="chip-valor">{reloj}</span>
           </div>
-          <div className="chip">
-            <span className="chip-titulo">ENERGÍA</span>
-            <span className="chip-valor corazones" aria-label={`${estado.vidas} vidas`}>
-              {Array.from({ length: VIDAS_INICIALES }, (_, i) => (
-                <span key={i} className={i < estado.vidas ? "" : "perdido"}>♥</span>
+          <div className={`chip chip-vidas ${mostrarMensaje ? "suma" : ""} ${golpeado ? "resta" : ""}`}>
+            <span className="chip-titulo">VIDAS</span>
+            <span className="chip-valor corazones" aria-label={`${estado.vidas} de ${VIDAS_MAXIMAS} vidas`}>
+              {Array.from({ length: VIDAS_MAXIMAS }, (_, i) => (
+                <span key={i} className={i < estado.vidas ? "llena" : "vacia"}>
+                  {i < estado.vidas ? "♥" : "♡"}
+                </span>
               ))}
             </span>
           </div>
@@ -95,7 +101,11 @@ function Level1({ nombre, onTerminar }) {
 
       {/* Tocar la escena también sirve para saltar (útil en celular) */}
       <div className="escena-marco">
-        <div className="escena" onPointerDown={saltar}>
+        <div
+          className="escena"
+          onPointerDown={saltar}
+          style={{ "--duracion-salto": `${DURACION_SALTO}ms` }}
+        >
           <div className="capa nubes" />
           <div className="capa pista skyline">
             <Skyline />
@@ -121,12 +131,24 @@ function Level1({ nombre, onTerminar }) {
             </div>
           ))}
 
+          {estado.mates.map((mate) => (
+            <div key={mate.id} className="sprite mate" style={{ left: `${mate.x}%` }}>
+              <Mate />
+            </div>
+          ))}
+
           <div
             className={`sprite corredora ${enElAire ? "jumping" : ""} ${golpeado ? "hit" : ""}`}
             style={{ left: `${JUGADOR_X}%` }}
           >
             <Corredora />
           </div>
+
+          {mostrarMensaje && (
+            <p className="mas-una-vida" style={{ left: `${JUGADOR_X}%` }}>
+              ¡+1 vida!
+            </p>
+          )}
 
           <div
             className={`sprite colectivo ${bondiSeVa ? "se-va" : ""}`}
