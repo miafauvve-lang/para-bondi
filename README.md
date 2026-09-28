@@ -4,12 +4,12 @@ Un juego web chiquito: el bondi está llegando a la parada y tenés que correr p
 
 ## Cómo se juega
 
-1. Escribí tu nombre y apretá **¡A correr!**
-2. Saltá los obstáculos que vienen por la vereda (🧉 🐕 🚧 🛴).
+1. Escribí tu nombre y apretá **¡A CORRER!**
+2. Saltá los obstáculos que vienen por la vereda: baldosas flojas, perros, bolsas de basura y conos.
 3. Tenés **3 vidas**: cada choque te saca una.
 4. Si aguantás hasta llegar a la parada 🚏 (unos 25 segundos), ¡ganaste!
 
-**Controles:** barra espaciadora, flecha ⬆️, el botón **Saltar** o tocando la calle (en celular).
+**Controles:** barra espaciadora, flecha ⬆️, el botón **¡SALTÁ!** o tocando la calle (en celular).
 
 ## Cómo correrlo en tu compu
 
@@ -37,6 +37,7 @@ src/
 │   ├── StartScreen.jsx  # pantalla de inicio: pide el nombre
 │   ├── Level1.jsx       # el nivel: dibuja la vereda, el bondi y los obstáculos
 │   ├── ResultScreen.jsx # pantalla final: ganaste o perdiste
+│   ├── ilustraciones/   # dibujos del juego (corredora, colectivo, barrio...) con los colores del mockup
 │   ├── GameHeader.jsx   # el título del juego
 │   └── GameButton.jsx   # botón reutilizable
 └── game/

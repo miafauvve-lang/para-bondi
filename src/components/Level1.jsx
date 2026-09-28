@@ -1,8 +1,16 @@
 import { useEffect, useReducer } from "react"
 import GameHeader from "./GameHeader"
 import GameButton from "./GameButton"
+import Corredora from "./ilustraciones/Corredora"
+import Colectivo from "./ilustraciones/Colectivo"
+import Parada from "./ilustraciones/Parada"
+import Obstaculo from "./ilustraciones/Obstaculo"
+import Barrio from "./ilustraciones/Barrio"
+import Skyline from "./ilustraciones/Skyline"
 import {
   TICK,
+  DURACION_NIVEL,
+  VIDAS_INICIALES,
   JUGADOR_X,
   estadoInicial,
   actualizarNivel,
@@ -45,70 +53,106 @@ function Level1({ nombre, onTerminar }) {
   const enElAire = estaEnElAire(estado)
   const golpeado = estado.tiempo < estado.golpeHasta
 
-  // La parada aparece desde la derecha en el último tramo y frena al lado de la corredora
-  const tramoFinal = Math.max(0, (estado.progreso - 85) / 15)
-  const paradaX = 105 - tramoFinal * (105 - JUGADOR_X - 6)
+  // Los segundos que faltan, para mostrarlos como en el mockup (00:25)
+  const segundosRestantes = Math.max(0, Math.ceil((DURACION_NIVEL - estado.tiempo) / 1000))
+  const reloj = `00:${String(segundosRestantes).padStart(2, "0")}`
 
-  // El bondi avanza por la calle a medida que corrés
-  const bondiX = 70 - estado.progreso * 0.45
+  // La parada aparece desde la derecha en el último tramo y frena delante de la corredora
+  const tramoFinal = Math.max(0, (estado.progreso - 85) / 15)
+  const paradaX = 108 - tramoFinal * (108 - (JUGADOR_X + 10))
+
+  // El colectivo va adelante, a la derecha. En el tramo final frena con la puerta
+  // justo en la parada; si perdiste, arranca y se va.
+  const bondiX = 74 - tramoFinal * (74 - (paradaX - 6))
+  const bondiSeVa = estado.resultado === "perdiste"
 
   return (
-    <div className="start-screen level">
-      <GameHeader />
+    <div className={`pantalla-juego ${estado.resultado ? "terminado" : ""}`}>
+      <header className="barra-juego">
+        <GameHeader tamano="chico" />
 
-      <p className="cheer">¡Dale, {nombre}! 🏃‍♀️</p>
-
-      <div className="hud">
-        <span className="lives">
-          {"❤️".repeat(estado.vidas)}
-          {"🤍".repeat(Math.max(0, 3 - estado.vidas))}
-        </span>
-        <div className="progress" aria-label="Distancia hasta la parada">
-          <div className="progress-fill" style={{ width: `${estado.progreso}%` }} />
-        </div>
-        <span>🚏</span>
-      </div>
-
-      {/* Tocar la calle también sirve para saltar (útil en celular) */}
-      <div className="city" onPointerDown={saltar}>
-        <div className="buildings">
-          <div className="buildings-track">
-            <span>🏢</span><span>🏠</span><span>🏬</span><span>🏢</span><span>🏠</span>
-            <span>🏢</span><span>🏠</span><span>🏬</span><span>🏢</span><span>🏠</span>
+        <div className="chips">
+          <div className="chip">
+            <span className="chip-titulo">NIVEL</span>
+            <span className="chip-valor">1 · PALERMO</span>
+          </div>
+          <div className="chip chip-verde">
+            <span className="chip-titulo">TIEMPO</span>
+            <span className="chip-valor">{reloj}</span>
+          </div>
+          <div className="chip">
+            <span className="chip-titulo">ENERGÍA</span>
+            <span className="chip-valor corazones" aria-label={`${estado.vidas} vidas`}>
+              {Array.from({ length: VIDAS_INICIALES }, (_, i) => (
+                <span key={i} className={i < estado.vidas ? "" : "perdido"}>♥</span>
+              ))}
+            </span>
           </div>
         </div>
 
-        <div className="sidewalk">
-          <span
-            className={`player ${enElAire ? "jumping" : ""} ${golpeado ? "hit" : ""}`}
-            style={{ left: `${JUGADOR_X}%` }}
-          >
-            🏃‍♀️
-          </span>
+        <div className="chip-meta">META: LLEGÁ A LA PARADA</div>
+      </header>
+
+      {/* Tocar la escena también sirve para saltar (útil en celular) */}
+      <div className="escena-marco">
+        <div className="escena" onPointerDown={saltar}>
+          <div className="capa nubes" />
+          <div className="capa pista skyline">
+            <Skyline />
+            <Skyline />
+          </div>
+          <div className="capa pista barrio">
+            <Barrio />
+            <Barrio />
+          </div>
+          <div className="capa vereda" />
+          <div className="capa cordon" />
+          <div className="capa calle">
+            <div className="linea-calle" />
+          </div>
+
+          <div className="sprite parada" style={{ left: `${paradaX}%` }}>
+            <Parada />
+          </div>
 
           {estado.obstaculos.map((obstaculo) => (
-            <span key={obstaculo.id} className="obstacle" style={{ left: `${obstaculo.x}%` }}>
-              {obstaculo.emoji}
-            </span>
+            <div key={obstaculo.id} className="sprite obstaculo" style={{ left: `${obstaculo.x}%` }}>
+              <Obstaculo tipo={obstaculo.tipo} />
+            </div>
           ))}
 
-          <span className="bus-stop" style={{ left: `${paradaX}%`, right: "auto" }}>
-            🚏
-          </span>
-        </div>
+          <div
+            className={`sprite corredora ${enElAire ? "jumping" : ""} ${golpeado ? "hit" : ""}`}
+            style={{ left: `${JUGADOR_X}%` }}
+          >
+            <Corredora />
+          </div>
 
-        <div className="street">
-          <div className="street-line moving"></div>
-          <span className="bus" style={{ left: `${bondiX}%`, right: "auto" }}>
-            🚌
-          </span>
+          <div
+            className={`sprite colectivo ${bondiSeVa ? "se-va" : ""}`}
+            style={{ left: `${bondiX}%` }}
+          >
+            <Colectivo />
+          </div>
+
+          <p className="aliento">¡Dale, {nombre}!</p>
         </div>
       </div>
 
-      <div className="controls">
-        <GameButton texto="⬆️ Saltar" onClick={saltar} />
-        <p className="hint">Saltá con la barra espaciadora, la flecha ⬆️ o tocando la calle.</p>
-      </div>
+      <footer className="barra-inferior">
+        <GameButton texto="¡SALTÁ!  ↑" variante="saltar" onClick={saltar} />
+
+        <div className="recorrido">
+          <span>SALIDA</span>
+          <div className="progress" aria-label="Distancia hasta la parada">
+            <div className="progress-fill" style={{ width: `${estado.progreso}%` }} />
+            <div className="progress-marca" style={{ left: `${estado.progreso}%` }} />
+          </div>
+          <span>PARADA</span>
+        </div>
+
+        <p className="hint">Saltá con la barra espaciadora, la flecha ↑ o tocando la calle.</p>
+      </footer>
     </div>
   )
 }

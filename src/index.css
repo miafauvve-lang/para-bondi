@@ -8,9 +8,21 @@
 
 :root {
   color-scheme: light;
-  font-family: Arial, Helvetica, sans-serif;
+  /* Paleta del mockup */
+  --azul-oscuro: #102a43;
+  --crema: #fff4d6;
+  --crema-oscura: #ffe8af;
+  --amarillo: #ffc53d;
+  --rojo: #e6403a;
+  --verde-agua: #53c9af;
+  --celeste: #27a7e7;
+  --gris: #6a7b88;
+  /* El mockup usa una sans gruesa (DejaVu Sans); Verdana es la más parecida en Windows */
+  font-family: "DejaVu Sans", Verdana, Geneva, sans-serif;
+  color: var(--azul-oscuro);
 }
 
 body {
   margin: 0;
+  background: var(--azul-oscuro);
 }

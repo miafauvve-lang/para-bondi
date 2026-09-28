@@ -1,6 +1,7 @@
 import { useState } from "react"
 import GameButton from "./GameButton"
 import GameHeader from "./GameHeader"
+import portada from "../assets/portada.jpg"
 
 function StartScreen({ onStart, nombreInicial = "" }) {
   // Lo que la persona va escribiendo en el campo
@@ -17,53 +18,33 @@ function StartScreen({ onStart, nombreInicial = "" }) {
   }
 
   return (
-    <div className="start-screen">
+    // La ilustración del mockup de fondo, con un degradé azul a la izquierda
+    <div className="portada" style={{ backgroundImage: `url(${portada})` }}>
+      <div className="portada-contenido">
+        <span className="barrita" />
+        <GameHeader />
 
-      <GameHeader />
+        <p className="bajada">Corré, saltá y esquivá el caos antes de que se vaya.</p>
+        <p className="pildora">Un día normal. Un bondi imposible.</p>
 
-      <p className="subtitle">
-        El bondi está llegando. ¿Llegás o lo perdés?
-      </p>
-
-      <form className="name-form" onSubmit={alEnviar}>
-        <label htmlFor="nombre">¿Cómo te llamás?</label>
-        <input
-          id="nombre"
-          type="text"
-          value={nombre}
-          onChange={(evento) => setNombre(evento.target.value)}
-          placeholder="Escribí tu nombre"
-          maxLength={20}
-          autoFocus
-          autoComplete="off"
-        />
-        <GameButton texto="¡A correr!" type="submit" disabled={!nombreValido} />
-        {!nombreValido && (
-          <p className="hint">Escribí tu nombre para poder arrancar.</p>
-        )}
-      </form>
-
-      <div className="city">
-        <div className="buildings">
-          <span>🏢</span>
-          <span>🏠</span>
-          <span>🏬</span>
-          <span>🏢</span>
-          <span>🏠</span>
-        </div>
-
-        <div className="sidewalk">
-          <span className="player">🏃‍♀️</span>
-          <span className="mate">🧉</span>
-          <span className="bus-stop">🚏</span>
-        </div>
-
-        <div className="street">
-          <div className="street-line"></div>
-          <span className="bus">🚌</span>
-        </div>
+        <form className="name-form" onSubmit={alEnviar}>
+          <label htmlFor="nombre">¿Cómo te llamás?</label>
+          <input
+            id="nombre"
+            type="text"
+            value={nombre}
+            onChange={(evento) => setNombre(evento.target.value)}
+            placeholder="Escribí tu nombre"
+            maxLength={20}
+            autoFocus
+            autoComplete="off"
+          />
+          <GameButton texto="¡A CORRER!  →" type="submit" disabled={!nombreValido} />
+          {!nombreValido && (
+            <p className="hint">Escribí tu nombre para poder arrancar.</p>
+          )}
+        </form>
       </div>
-
     </div>
   )
 }
