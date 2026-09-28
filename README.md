@@ -1,16 +1,50 @@
-# React + Vite
+# ¡PARÁ, BONDI! 🚌
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+Un juego web chiquito: el bondi está llegando a la parada y tenés que correr por la vereda esquivando obstáculos para no perderlo.
 
-Currently, two official plugins are available:
+## Cómo se juega
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+1. Escribí tu nombre y apretá **¡A correr!**
+2. Saltá los obstáculos que vienen por la vereda (🧉 🐕 🚧 🛴).
+3. Tenés **3 vidas**: cada choque te saca una.
+4. Si aguantás hasta llegar a la parada 🚏 (unos 25 segundos), ¡ganaste!
 
-## React Compiler
+**Controles:** barra espaciadora, flecha ⬆️, el botón **Saltar** o tocando la calle (en celular).
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Cómo correrlo en tu compu
 
-## Expanding the Oxlint configuration
+Necesitás tener [Node.js](https://nodejs.org) instalado.
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.
+```bash
+npm install      # instala las dependencias (solo la primera vez)
+npm run dev      # abre el juego en modo desarrollo
+```
+
+Otros comandos útiles:
+
+| Comando           | Qué hace                                      |
+| ----------------- | --------------------------------------------- |
+| `npm run build`   | arma la versión final en la carpeta `dist/`   |
+| `npm run preview` | muestra esa versión final en el navegador     |
+| `npm run lint`    | revisa el código con [Oxlint](https://oxc.rs) |
+
+## Cómo está organizado
+
+```
+src/
+├── App.jsx              # decide qué pantalla mostrar (inicio, juego, resultado)
+├── components/
+│   ├── StartScreen.jsx  # pantalla de inicio: pide el nombre
+│   ├── Level1.jsx       # el nivel: dibuja la vereda, el bondi y los obstáculos
+│   ├── ResultScreen.jsx # pantalla final: ganaste o perdiste
+│   ├── GameHeader.jsx   # el título del juego
+│   └── GameButton.jsx   # botón reutilizable
+└── game/
+    └── nivel1.js        # las reglas del nivel (sin nada visual)
+```
+
+¿Querés cambiar la dificultad? Las constantes al principio de `src/game/nivel1.js` controlan la duración del nivel, las vidas, la velocidad de los obstáculos y el tiempo de salto.
+
+## Hecho con
+
+[React](https://react.dev) + [Vite](https://vite.dev)
