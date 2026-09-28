@@ -5,10 +5,22 @@
 export const TICK = 30 // cada cuántos milisegundos avanza el juego
 export const DURACION_NIVEL = 25000 // el nivel dura 25 segundos
 export const VIDAS_INICIALES = 3
+export const VIDAS_MAXIMAS = 3 // los mates no pueden pasar de este número
 export const JUGADOR_X = 12 // dónde está parada la corredora
 export const VELOCIDAD = 0.6 // cuánto se mueven los obstáculos en cada tick
-export const DURACION_SALTO = 800 // cuánto tiempo queda en el aire (ms)
-export const DURACION_GOLPE = 700 // cuánto parpadea después de chocar (ms)
+// Cuánto tiempo queda en el aire (ms). Como el escenario sigue corriendo,
+// más tiempo en el aire = más distancia recorrida por arriba de los obstáculos.
+export const DURACION_SALTO = 1150
+export const DURACION_INMUNIDAD = 2000 // después de chocar, 2 s sin perder vidas
+export const DURACION_MENSAJE = 1200 // cuánto se ve el cartelito "¡+1 vida!" (ms)
+
+// Tiempo entre un obstáculo y el siguiente: entre 1,8 y 2,6 segundos,
+// así hay tiempo de aterrizar y prepararse para el próximo salto.
+const ESPERA_MINIMA = 1800
+const ESPERA_EXTRA = 800
+
+// Cada cuántos obstáculos aparece un mate, en el hueco hasta el siguiente
+const OBSTACULOS_POR_MATE = 2
 
 // Cada tipo tiene su dibujo en components/ilustraciones/Obstaculo.jsx
 const TIPOS_OBSTACULO = ["baldosa", "perro", "basura", "cono"]
@@ -18,15 +30,28 @@ export const estadoInicial = {
   progreso: 0,
   vidas: VIDAS_INICIALES,
   obstaculos: [],
+  mates: [],
   proximoObstaculo: 1500, // el primero aparece al segundo y medio
+  proximoMate: null, // cuándo aparece el próximo mate (null = ninguno en camino)
+  obstaculosCreados: 0,
   siguienteId: 1,
   saltoHasta: 0,
   golpeHasta: 0,
+  mensajeHasta: 0,
   resultado: null, // null mientras se juega, después "ganaste" o "perdiste"
 }
 
 export function estaEnElAire(estado) {
   return estado.tiempo < estado.saltoHasta
+}
+
+export function esInmune(estado) {
+  return estado.tiempo < estado.golpeHasta
+}
+
+// ¿Este objeto está a la altura de la corredora?
+function tocaALaCorredora(x) {
+  return x > JUGADOR_X - 5 && x < JUGADOR_X + 5
 }
 
 // El "reducer": recibe el estado actual y una acción, y devuelve el estado nuevo.
@@ -45,35 +70,69 @@ export function actualizarNivel(estado, accion) {
     const enElAire = tiempo < estado.saltoHasta
     let vidas = estado.vidas
     let golpeHasta = estado.golpeHasta
+    let mensajeHasta = estado.mensajeHasta
     const obstaculos = []
+    const mates = []
 
     // 1. Mover los obstáculos hacia la izquierda y revisar choques
     for (const obstaculo of estado.obstaculos) {
       const x = obstaculo.x - VELOCIDAD
-      const estaEncima = x > JUGADOR_X - 5 && x < JUGADOR_X + 5
+      const toca = tocaALaCorredora(x) && !enElAire
+      const inmune = tiempo < golpeHasta
 
-      if (estaEncima && !enElAire) {
-        vidas = vidas - 1 // ¡chocó! pierde una vida y el obstáculo desaparece
-        golpeHasta = tiempo + DURACION_GOLPE
+      if (toca && !inmune && !obstaculo.inofensivo) {
+        vidas = vidas - 1 // ¡chocó! pierde UNA vida y el obstáculo desaparece
+        golpeHasta = tiempo + DURACION_INMUNIDAD
       } else if (x > -10) {
-        obstaculos.push({ ...obstaculo, x }) // sigue en pantalla
+        // Si la atraviesa mientras es inmune, ese obstáculo ya no le hace nada
+        // (así no le saca una vida justo cuando se termina la inmunidad)
+        const inofensivo = obstaculo.inofensivo || (toca && inmune)
+        obstaculos.push({ ...obstaculo, x, inofensivo }) // sigue en pantalla
       }
     }
 
-    // 2. Crear un obstáculo nuevo cada tanto (menos al final, cerca de la parada)
+    // 2. Mover los mates y ver si agarró alguno (en el piso o saltando)
+    for (const mate of estado.mates) {
+      const x = mate.x - VELOCIDAD
+      if (tocaALaCorredora(x) && vidas > 0) {
+        if (vidas < VIDAS_MAXIMAS) {
+          vidas = vidas + 1
+          mensajeHasta = tiempo + DURACION_MENSAJE
+        }
+        // El mate desaparece al agarrarlo, aunque tenga las vidas completas
+      } else if (x > -10) {
+        mates.push({ ...mate, x })
+      }
+    }
+
+    // 3. Crear obstáculos y mates nuevos (menos al final, cerca de la parada)
     const progreso = Math.min(100, (tiempo / DURACION_NIVEL) * 100)
     let proximoObstaculo = estado.proximoObstaculo
+    let proximoMate = estado.proximoMate
+    let obstaculosCreados = estado.obstaculosCreados
     let siguienteId = estado.siguienteId
 
     if (tiempo >= proximoObstaculo && progreso < 88) {
       const tipo = TIPOS_OBSTACULO[Math.floor(Math.random() * TIPOS_OBSTACULO.length)]
       obstaculos.push({ id: siguienteId, x: 100, tipo })
       siguienteId = siguienteId + 1
-      // El próximo aparece entre 1,1 y 2 segundos después
-      proximoObstaculo = tiempo + 1100 + Math.random() * 900
+      obstaculosCreados = obstaculosCreados + 1
+      proximoObstaculo = tiempo + ESPERA_MINIMA + Math.random() * ESPERA_EXTRA
+
+      // El mate sale justo en la mitad del hueco entre dos obstáculos:
+      // lejos de los dos, así se agarra corriendo sin chocar nada
+      if (obstaculosCreados % OBSTACULOS_POR_MATE === 0) {
+        proximoMate = tiempo + (proximoObstaculo - tiempo) / 2
+      }
     }
 
-    // 3. ¿Ganó o perdió?
+    if (proximoMate !== null && tiempo >= proximoMate) {
+      mates.push({ id: siguienteId, x: 100 })
+      siguienteId = siguienteId + 1
+      proximoMate = null
+    }
+
+    // 4. ¿Ganó o perdió?
     let resultado = null
     if (vidas <= 0) resultado = "perdiste"
     else if (progreso >= 100) resultado = "ganaste"
@@ -84,9 +143,13 @@ export function actualizarNivel(estado, accion) {
       progreso,
       vidas,
       obstaculos,
+      mates,
       proximoObstaculo,
+      proximoMate,
+      obstaculosCreados,
       siguienteId,
       golpeHasta,
+      mensajeHasta,
       resultado,
     }
   }

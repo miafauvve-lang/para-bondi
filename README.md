@@ -6,8 +6,9 @@ Un juego web chiquito: el bondi está llegando a la parada y tenés que correr p
 
 1. Escribí tu nombre y apretá **¡A CORRER!**
 2. Saltá los obstáculos que vienen por la vereda: baldosas flojas, perros, bolsas de basura y conos.
-3. Tenés **3 vidas**: cada choque te saca una.
-4. Si aguantás hasta llegar a la parada 🚏 (unos 25 segundos), ¡ganaste!
+3. Tenés **3 vidas**: cada choque te saca una y después tenés 2 segundos de inmunidad (la corredora parpadea).
+4. Agarrá los **mates** 🧉 que aparecen en la vereda: cada uno te devuelve una vida (hasta 3).
+5. Si aguantás hasta llegar a la parada 🚏 (unos 25 segundos), ¡ganaste!
 
 **Controles:** barra espaciadora, flecha ⬆️, el botón **¡SALTÁ!** o tocando la calle (en celular).
 

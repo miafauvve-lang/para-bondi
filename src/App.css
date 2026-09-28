@@ -253,8 +253,35 @@
   gap: 8px;
 }
 
-.corazones .perdido {
-  opacity: 0.2;
+.corazones .llena {
+  color: var(--rojo);
+}
+
+.corazones .vacia {
+  opacity: 0.35;
+}
+
+.chip-vidas .corazones {
+  font-size: 24px;
+  line-height: 1;
+}
+
+/* Las vidas "laten" al sumar una y tiemblan al perder una */
+.chip-vidas.suma .corazones {
+  animation: latir 0.3s ease-in-out 3;
+}
+
+@keyframes latir {
+  50% { transform: scale(1.25); }
+}
+
+.chip-vidas.resta {
+  animation: temblar 0.25s ease-in-out 2;
+}
+
+@keyframes temblar {
+  25% { transform: translateX(-4px); }
+  75% { transform: translateX(4px); }
 }
 
 .chip-meta {
@@ -420,6 +447,55 @@
   z-index: 3;
 }
 
+/* Los mates flotan un poquito sobre la vereda: se agarran corriendo o saltando */
+.mate {
+  bottom: 29%;
+  width: 6.5cqw;
+  z-index: 2;
+  animation: flotar 0.6s ease-in-out infinite alternate;
+}
+
+@keyframes flotar {
+  from { transform: translateY(0); }
+  to { transform: translateY(-1.2cqw); }
+}
+
+.mate .mate-brillo {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: brillar 0.8s ease-in-out infinite alternate;
+}
+
+@keyframes brillar {
+  from { transform: scale(0.85); opacity: 0.25; }
+  to { transform: scale(1.05); opacity: 0.5; }
+}
+
+/* Cartelito "¡+1 vida!" arriba de la corredora */
+.mas-una-vida {
+  position: absolute;
+  bottom: 62%;
+  translate: -50% 0;
+  z-index: 5;
+  margin: 0;
+  white-space: nowrap;
+  background: var(--amarillo);
+  border: 0.3cqw solid var(--azul-oscuro);
+  border-radius: 999px;
+  padding: 0.5cqw 1.6cqw;
+  font-size: clamp(14px, 2cqw, 26px);
+  font-weight: 800;
+  box-shadow: 0 0.4cqw 0 var(--azul-oscuro);
+  animation: subir-mensaje 1.2s ease-out both;
+}
+
+@keyframes subir-mensaje {
+  0% { transform: translateY(2cqw) scale(0.6); opacity: 0; }
+  15% { transform: translateY(0) scale(1.1); opacity: 1; }
+  80% { transform: translateY(-2cqw); opacity: 1; }
+  100% { transform: translateY(-3cqw); opacity: 0; }
+}
+
 .colectivo {
   bottom: 0.5%;
   width: 29cqw;
@@ -509,8 +585,9 @@
   to { opacity: 0.3; }
 }
 
+/* La duración sale de DURACION_SALTO (nivel1.js), así el dibujo y las reglas coinciden */
 .corredora.jumping {
-  animation: saltar 0.8s ease-out;
+  animation: saltar var(--duracion-salto, 1150ms) linear;
 }
 
 .corredora.jumping .pierna-adelante {
@@ -523,9 +600,11 @@
   transform: rotate(40deg);
 }
 
+/* Sube rápido, "flota" un rato arriba y baja: un salto largo y cómodo */
 @keyframes saltar {
-  0% { transform: translateY(0); }
-  45% { transform: translateY(-15cqw); }
+  0% { transform: translateY(0); animation-timing-function: ease-out; }
+  30% { transform: translateY(-15cqw); animation-timing-function: ease-in-out; }
+  70% { transform: translateY(-16cqw); animation-timing-function: ease-in; }
   100% { transform: translateY(0); }
 }
 

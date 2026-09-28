@@ -17,7 +17,7 @@ function ResultScreen({ nombre, resultado, onReintentar, onCambiarNombre }) {
         <p>
           {gano
             ? `¡Bien, ${nombre}! El chofer estaba de buen humor. Milagro porteño desbloqueado.`
-            : `Te quedaste sin energía, ${nombre}. Tranqui, en 20 minutos pasa otro... o no.`}
+            : `Te quedaste sin vidas, ${nombre}. Tranqui, en 20 minutos pasa otro... o no.`}
         </p>
 
         <div className={`resultado-colectivo ${gano ? "" : "se-va"}`}>
