@@ -12,6 +12,16 @@ Un juego web chiquito: el bondi está llegando a la parada y tenés que correr p
 
 **Controles:** barra espaciadora, flecha ⬆️, el botón **¡SALTÁ!** o tocando la calle (en celular).
 
+## Pantallas (React Router)
+
+| Ruta         | Pantalla  | Qué pasa                                   |
+| ------------ | --------- | ------------------------------------------ |
+| `/`          | Inicio    | escribís tu nombre (input controlado)      |
+| `/juego`     | Nivel 1   | corrés, saltás y juntás mates              |
+| `/resultado` | Resultado | ¿alcanzaste el bondi o se te fue?          |
+
+Si entrás directo a `/juego` o `/resultado` sin haber puesto tu nombre, el juego te devuelve al inicio.
+
 ## Cómo correrlo en tu compu
 
 Necesitás tener [Node.js](https://nodejs.org) instalado.
@@ -33,7 +43,8 @@ Otros comandos útiles:
 
 ```
 src/
-├── App.jsx              # decide qué pantalla mostrar (inicio, juego, resultado)
+├── main.jsx             # arranca React y envuelve todo en BrowserRouter
+├── App.jsx              # define las rutas: /, /juego y /resultado
 ├── components/
 │   ├── StartScreen.jsx  # pantalla de inicio: pide el nombre
 │   ├── Level1.jsx       # el nivel: dibuja la vereda, el bondi y los obstáculos
@@ -49,4 +60,6 @@ src/
 
 ## Hecho con
 
-[React](https://react.dev) + [Vite](https://vite.dev)
+[React](https://react.dev) + [React Router](https://reactrouter.com) + [Vite](https://vite.dev)
+
+El proceso de trabajo con IA está registrado en [PROCESO-IA.md](PROCESO-IA.md).

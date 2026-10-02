@@ -1,8 +1,9 @@
+import { Link } from "react-router-dom"
 import GameButton from "./GameButton"
 import Colectivo from "./ilustraciones/Colectivo"
 import portada from "../assets/portada.jpg"
 
-function ResultScreen({ nombre, resultado, onReintentar, onCambiarNombre }) {
+function ResultScreen({ nombre, resultado, onReintentar }) {
   const gano = resultado === "ganaste"
 
   return (
@@ -26,7 +27,10 @@ function ResultScreen({ nombre, resultado, onReintentar, onCambiarNombre }) {
 
         <div className="result-buttons">
           <GameButton texto={gano ? "JUGAR DE NUEVO  →" : "REINTENTAR  →"} onClick={onReintentar} />
-          <GameButton texto="CAMBIAR NOMBRE" variante="secundario" onClick={onCambiarNombre} />
+          {/* Link navega a otra ruta sin recargar la página (como un <a>, pero de React Router) */}
+          <Link to="/" className="game-button game-button-secundario">
+            CAMBIAR NOMBRE
+          </Link>
         </div>
       </div>
     </div>
