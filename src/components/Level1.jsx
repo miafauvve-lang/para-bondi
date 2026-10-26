@@ -1,6 +1,7 @@
 import { useEffect, useReducer } from "react"
 import GameHeader from "./GameHeader"
 import GameButton from "./GameButton"
+import Marcador from "./Marcador"
 import Corredora from "./ilustraciones/Corredora"
 import Colectivo from "./ilustraciones/Colectivo"
 import Parada from "./ilustraciones/Parada"
@@ -57,9 +58,6 @@ function Level1({ nombre, onTerminar }) {
   const golpeado = esInmune(estado) // parpadea mientras dura la inmunidad
   const mostrarMensaje = estado.tiempo < estado.mensajeHasta
 
-  // Una carita según cuántas vidas quedan (solo visual, no cambia las reglas)
-  const carita = estado.vidas >= 3 ? "😎" : estado.vidas === 2 ? "😅" : "😰"
-
   // Los segundos que faltan, para mostrarlos como en el mockup (00:25)
   const segundosRestantes = Math.max(0, Math.ceil((DURACION_NIVEL - estado.tiempo) / 1000))
   const reloj = `00:${String(segundosRestantes).padStart(2, "0")}`
@@ -78,28 +76,14 @@ function Level1({ nombre, onTerminar }) {
       <header className="barra-juego">
         <GameHeader tamano="chico" />
 
-        <div className="chips">
-          <div className="chip">
-            <span className="chip-titulo">NIVEL</span>
-            <span className="chip-valor">1 · PALERMO</span>
-          </div>
-          <div className="chip chip-verde">
-            <span className="chip-titulo">TIEMPO</span>
-            <span className="chip-valor">{reloj}</span>
-          </div>
-          <div className={`chip chip-vidas ${mostrarMensaje ? "suma" : ""} ${golpeado ? "resta" : ""}`}>
-            <span className="chip-titulo">
-              VIDAS <span className="carita" aria-hidden="true">{carita}</span>
-            </span>
-            <span className="chip-valor corazones" aria-label={`${estado.vidas} de ${VIDAS_MAXIMAS} vidas`}>
-              {Array.from({ length: VIDAS_MAXIMAS }, (_, i) => (
-                <span key={i} className={i < estado.vidas ? "llena" : "vacia"}>
-                  {i < estado.vidas ? "♥" : "♡"}
-                </span>
-              ))}
-            </span>
-          </div>
-        </div>
+        <Marcador
+          nivel="1 · PALERMO"
+          tiempo={reloj}
+          vidas={estado.vidas}
+          vidasMaximas={VIDAS_MAXIMAS}
+          sumaVida={mostrarMensaje}
+          pierdeVida={golpeado}
+        />
 
         <div className="chip-meta">META: LLEGÁ A LA PARADA</div>
       </header>
