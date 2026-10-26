@@ -1,4 +1,4 @@
-// La pantalla de juego. Se usa para los DOS niveles (Palermo y Recoleta):
+// La pantalla de juego. Se usa para los TRES niveles (Palermo, Recoleta y Retiro):
 // lo que cambia entre uno y otro llega en la prop "nivel" (ver game/niveles.js).
 import { useEffect, useReducer } from "react"
 import GameHeader from "./GameHeader"
@@ -11,7 +11,9 @@ import Obstaculo from "./ilustraciones/Obstaculo"
 import Mate from "./ilustraciones/Mate"
 import Barrio from "./ilustraciones/Barrio"
 import BarrioRecoleta from "./ilustraciones/BarrioRecoleta"
+import BarrioRetiro from "./ilustraciones/BarrioRetiro"
 import Skyline from "./ilustraciones/Skyline"
+import HorizonteRetiro from "./ilustraciones/HorizonteRetiro"
 import {
   TICK,
   DURACION_NIVEL,
@@ -24,6 +26,16 @@ import {
   estaEnElAire,
   esInmune,
 } from "../game/nivel1"
+
+// El paisaje de cada barrio (según el número de nivel):
+//   Fondo     → la capa de edificios / plaza que pasa detrás de la vereda
+//   Horizonte → la capa lejana, que se mueve más despacio
+//   cielo     → clase de App.css que cambia el color del cielo
+const ESCENARIOS = {
+  1: { Fondo: Barrio, Horizonte: Skyline, cielo: "" },
+  2: { Fondo: BarrioRecoleta, Horizonte: Skyline, cielo: "cielo-recoleta" },
+  3: { Fondo: BarrioRetiro, Horizonte: HorizonteRetiro, cielo: "cielo-retiro" },
+}
 
 function Level1({ nombre, nivel, onTerminar }) {
   // El estado arranca SIEMPRE de cero, armado con la ficha del nivel
@@ -78,8 +90,8 @@ function Level1({ nombre, nivel, onTerminar }) {
   const bondiX = 74 - tramoFinal * (74 - (paradaX - 6))
   const bondiSeVa = estado.resultado === "perdiste"
 
-  // Cada barrio tiene su fondo; todo lo demás es igual
-  const Fondo = nivel.numero === 2 ? BarrioRecoleta : Barrio
+  // Cada barrio tiene su paisaje; todo lo demás (personaje, obstáculos, mates) es igual
+  const { Fondo, Horizonte, cielo } = ESCENARIOS[nivel.numero]
   // Qué tan rápido va este nivel comparado con Palermo (1 = igual, 1.13 = 13 % más rápido).
   // App.css lo usa para que la vereda y el barrio se muevan al mismo ritmo que los obstáculos.
   const ritmo = nivel.velocidad / VELOCIDAD
@@ -104,14 +116,14 @@ function Level1({ nombre, nivel, onTerminar }) {
       {/* Tocar la escena también sirve para saltar (útil en celular) */}
       <div className="escena-marco">
         <div
-          className="escena"
+          className={`escena ${cielo}`}
           onPointerDown={saltar}
           style={{ "--duracion-salto": `${DURACION_SALTO}ms`, "--ritmo": ritmo }}
         >
           <div className="capa nubes" />
           <div className="capa pista skyline">
-            <Skyline />
-            <Skyline />
+            <Horizonte />
+            <Horizonte />
           </div>
           <div className="capa pista barrio">
             <Fondo />

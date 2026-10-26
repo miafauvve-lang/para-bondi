@@ -1,15 +1,18 @@
-// Fondo del nivel 2: una cuadra de Recoleta con edificios de estilo francés,
-// techos de pizarra (mansardas), ventanas altas con arco, balcones de hierro,
-// faroles antiguos, árboles y el cartel del barrio.
+// Fondo del nivel 2: Recoleta.
+// Una cuadra "afrancesada" y pareja: fachadas de piedra clara, techos de pizarra
+// (mansardas), un edificio de esquina con cúpula, la torre blanca de la Basílica
+// del Pilar, un café con mesitas, faroles antiguos y un gomero gigante.
 // Mismo trazo y paleta que Barrio.jsx (Palermo), y también empalma consigo mismo
 // para poder repetirlo sin cortes.
 import { AZUL_OSCURO, CREMA, VERDE_AGUA } from "./colores"
-import { Arbol, Balcon, Negocio } from "./Barrio"
+import { Balcon, Negocio } from "./Barrio"
 
 const trazo = { stroke: AZUL_OSCURO, strokeWidth: 3, strokeLinejoin: "round" }
 
 const PIZARRA = "#5E7690" // el gris azulado de los techos franceses
 const VIDRIO = "#BFE3F2"
+const BLANCO_IGLESIA = "#F7F3EA"
+const AZULEJO = "#2A5CAA"
 
 // Ventana alta con arco arriba y una "piedra" clave en el centro
 function VentanaClasica({ x, y }) {
@@ -101,6 +104,96 @@ function Edificio({ x, ancho, alto, color, balcon = true, children }) {
   )
 }
 
+// La cúpula de esquina, tan porteña: tambor con ventanitas ovaladas,
+// cúpula de pizarra, linterna y aguja. Va arriba de un Edificio.
+function Cupula({ x, techo }) {
+  return (
+    <g>
+      <rect x={x - 28} y={techo - 44} width="56" height="40" fill={CREMA} {...trazo} />
+      {[-14, 0, 14].map((dx) => (
+        <ellipse key={dx} cx={x + dx} cy={techo - 24} rx="4" ry="8" fill={VIDRIO} stroke={AZUL_OSCURO} strokeWidth="2" />
+      ))}
+      <path d={`M${x - 32} ${techo - 44} Q${x - 30} ${techo - 92} ${x} ${techo - 92} Q${x + 30} ${techo - 92} ${x + 32} ${techo - 44} Z`} fill={PIZARRA} {...trazo} />
+      <path d={`M${x - 12} ${techo - 50} Q${x - 12} ${techo - 80} ${x} ${techo - 86}`} fill="none" stroke="#8FA3B8" strokeWidth="3" strokeLinecap="round" />
+      <rect x={x - 7} y={techo - 104} width="14" height="13" fill={CREMA} {...trazo} />
+      <path d={`M${x} ${techo - 104} V${techo - 116}`} stroke={AZUL_OSCURO} strokeWidth="3" strokeLinecap="round" />
+    </g>
+  )
+}
+
+// La Basílica del Pilar: blanca, con portada de curvas y la torre del
+// campanario coronada por una cupulita de azulejos azules
+function BasilicaDelPilar({ x }) {
+  const torre = x + 140
+  return (
+    <g>
+      {/* Portada de la iglesia */}
+      <path
+        d={`M${x} 262 V150 H${x + 30} Q${x + 34} 128 ${x + 52} 124 Q${x + 70} 104 ${x + 88} 124 Q${x + 106} 128 ${x + 110} 150 H${x + 140} V262 Z`}
+        fill={BLANCO_IGLESIA}
+        {...trazo}
+      />
+      <circle cx={x + 70} cy="140" r="9" fill={VIDRIO} stroke={AZUL_OSCURO} strokeWidth="2.5" />
+      <path d={`M${x + 50} 262 V206 Q${x + 70} 182 ${x + 90} 206 V262 Z`} fill="#8B5A2B" stroke={AZUL_OSCURO} strokeWidth="2.5" />
+      <path d={`M${x + 70} 192 V262`} stroke={AZUL_OSCURO} strokeWidth="1.5" />
+      <path d={`M${x + 16} 166 V250 M${x + 124} 166 V250`} stroke={AZUL_OSCURO} strokeWidth="2" opacity="0.4" />
+
+      {/* Torre del campanario */}
+      <rect x={torre} y="96" width="56" height="166" fill={BLANCO_IGLESIA} {...trazo} />
+      <rect x={torre - 4} y="92" width="64" height="8" fill={BLANCO_IGLESIA} {...trazo} />
+      <path d={`M${torre + 16} 150 V128 Q${torre + 28} 112 ${torre + 40} 128 V150 Z`} fill="#3F5F7A" stroke={AZUL_OSCURO} strokeWidth="2.5" />
+      <rect x={torre + 8} y="58" width="40" height="34" fill={BLANCO_IGLESIA} {...trazo} />
+      <path d={`M${torre + 18} 90 V74 Q${torre + 28} 62 ${torre + 38} 74 V90 Z`} fill="#3F5F7A" stroke={AZUL_OSCURO} strokeWidth="2.5" />
+      {/* Cupulita de azulejos y la cruz */}
+      <path d={`M${torre + 6} 58 Q${torre + 8} 26 ${torre + 28} 24 Q${torre + 48} 26 ${torre + 50} 58 Z`} fill={AZULEJO} {...trazo} />
+      {[[16, 48], [28, 40], [40, 48], [22, 34], [34, 34]].map(([dx, dy]) => (
+        <circle key={`${dx}-${dy}`} cx={torre + dx} cy={dy} r="2" fill="#FFFFFF" />
+      ))}
+      <path d={`M${torre + 28} 24 V6 M${torre + 22} 12 H${torre + 34}`} stroke={AZUL_OSCURO} strokeWidth="3" strokeLinecap="round" />
+    </g>
+  )
+}
+
+// El gomero de la Recoleta: tronco grueso y retorcido, con muletas,
+// y una copa enorme, ancha y achatada (bien distinta a los arbolitos de Palermo)
+function Gomero({ x }) {
+  return (
+    <g>
+      <path d={`M${x - 40} 262 L${x - 28} 198 M${x + 42} 262 L${x + 30} 196`} stroke={AZUL_OSCURO} strokeWidth="6" strokeLinecap="round" />
+      <path
+        d={`M${x - 22} 262 Q${x - 10} 220 ${x - 26} 182 L${x - 6} 176 Q${x} 196 ${x + 8} 176 L${x + 28} 182 Q${x + 12} 220 ${x + 24} 262 Z`}
+        fill="#7A5C45"
+        {...trazo}
+      />
+      <g fill="#3F7D4F" stroke={AZUL_OSCURO} strokeWidth="3">
+        <ellipse cx={x - 50} cy="168" rx="38" ry="20" />
+        <ellipse cx={x + 52} cy="166" rx="40" ry="21" />
+        <ellipse cx={x} cy="144" rx="58" ry="30" />
+      </g>
+      <g fill="#5C9A5A">
+        <ellipse cx={x - 16} cy="132" rx="22" ry="9" />
+        <ellipse cx={x + 44} cy="158" rx="15" ry="7" />
+        <ellipse cx={x - 56} cy="162" rx="13" ry="6" />
+      </g>
+    </g>
+  )
+}
+
+// El atrio abierto frente a la iglesia: un murito blanco con reja de hierro
+function Atrio({ x, ancho }) {
+  const barrotes = []
+  for (let bx = x + 6; bx < x + ancho; bx += 9) barrotes.push(bx)
+  return (
+    <g>
+      <rect x={x} y="236" width={ancho} height="26" fill={BLANCO_IGLESIA} {...trazo} />
+      <path d={`M${x} 212 H${x + ancho}`} stroke={AZUL_OSCURO} strokeWidth="2.5" />
+      {barrotes.map((bx) => (
+        <path key={bx} d={`M${bx} 212 V236`} stroke={AZUL_OSCURO} strokeWidth="1.5" />
+      ))}
+    </g>
+  )
+}
+
 // Farol antiguo de plaza, de hierro negro con cuatro vidrios
 function FarolClasico({ x }) {
   return (
@@ -110,6 +203,17 @@ function FarolClasico({ x }) {
       <path d={`M${x - 10} 150 h20 l-4 -24 h-12 z`} fill="#FFE8AF" stroke={AZUL_OSCURO} strokeWidth="2.5" strokeLinejoin="round" />
       <path d={`M${x} 150 V126`} stroke={AZUL_OSCURO} strokeWidth="1.5" />
       <path d={`M${x - 9} 126 h18 l-9 -9 z`} fill={AZUL_OSCURO} />
+    </g>
+  )
+}
+
+// Mesita redonda de café con dos sillas, en la vereda
+function MesaDeCafe({ x }) {
+  return (
+    <g stroke={AZUL_OSCURO} strokeWidth="2.5" strokeLinecap="round">
+      <path d={`M${x - 16} 262 V246 M${x - 22} 246 H${x - 12} M${x + 16} 262 V246 M${x + 12} 246 H${x + 22}`} fill="none" />
+      <path d={`M${x} 262 V244`} />
+      <ellipse cx={x} cy="243" rx="12" ry="3.5" fill={CREMA} />
     </g>
   )
 }
@@ -140,18 +244,25 @@ function CartelRecoleta({ x }) {
 function BarrioRecoleta() {
   return (
     <svg viewBox="0 0 1000 262" preserveAspectRatio="none" className="barrio-dibujo" aria-hidden="true">
-      <Edificio x={0} ancho={200} alto={186} color="#EFE3C8" />
-      <Edificio x={200} ancho={180} alto={160} color="#E7C9B5" balcon={false}>
-        <Negocio x={200} ancho={180} cartel="CAFÉ" colorToldo={VERDE_AGUA} />
+      {/* Una pared continua de fachadas de piedra, todas de la misma familia de colores */}
+      <Edificio x={0} ancho={170} alto={182} color="#EFE3C8" />
+      <Edificio x={170} ancho={160} alto={168} color="#E6DCCB" balcon={false}>
+        <Negocio x={170} ancho={160} cartel="CAFÉ" colorToldo={VERDE_AGUA} />
       </Edificio>
-      <Edificio x={380} ancho={220} alto={196} color="#C9D3D9" />
-      <Edificio x={600} ancho={190} alto={170} color="#F2E2C0" />
-      <Edificio x={790} ancho={210} alto={190} color="#E2D3B8" />
+      <Edificio x={330} ancho={140} alto={160} color="#F1E9DA" />
+      <Cupula x={400} techo={100} />
+      {/* Hueco abierto: el atrio de la iglesia con el gomero */}
+      <Atrio x={470} ancho={96} />
+      <BasilicaDelPilar x={566} />
+      <Edificio x={762} ancho={118} alto={184} color="#D9D0C1" />
+      <Edificio x={880} ancho={120} alto={176} color="#EFE3C8" />
 
-      <Arbol x={196} />
-      <FarolClasico x={480} />
-      <CartelRecoleta x={640} />
-      <Arbol x={790} />
+      <MesaDeCafe x={208} />
+      <MesaDeCafe x={292} />
+      <Gomero x={516} />
+      <FarolClasico x={166} />
+      <FarolClasico x={758} />
+      <CartelRecoleta x={940} />
     </svg>
   )
 }

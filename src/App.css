@@ -316,6 +316,16 @@
   background: linear-gradient(#27a7e7 0%, #8fd3f4 55%, #cfeaf5 60%);
 }
 
+/* El cielo de cada barrio (Palermo usa el de arriba).
+   Recoleta: celeste más suave. Retiro: atardecer. */
+.escena.cielo-recoleta {
+  background: linear-gradient(#4b9fdc 0%, #a9d6ef 55%, #e3f1f6 60%);
+}
+
+.escena.cielo-retiro {
+  background: linear-gradient(#5b8fd0 0%, #f2b483 48%, #fbdcae 60%);
+}
+
 .capa {
   position: absolute;
   left: 0;

@@ -22,7 +22,8 @@ export const ESPERA_MINIMA = 1800
 export const ESPERA_EXTRA = 800
 
 // Cada cuántos obstáculos aparece un mate, en el hueco hasta el siguiente
-const OBSTACULOS_POR_MATE = 2
+// (Palermo y Recoleta; cada nivel lo puede cambiar en su ficha)
+export const OBSTACULOS_POR_MATE = 2
 
 // Cada tipo tiene su dibujo en components/ilustraciones/Obstaculo.jsx
 const TIPOS_OBSTACULO = ["baldosa", "perro", "basura", "cono"]
@@ -52,6 +53,7 @@ export function crearEstadoInicial(nivel) {
     velocidad: nivel.velocidad,
     esperaMinima: nivel.esperaMinima,
     esperaExtra: nivel.esperaExtra,
+    obstaculosPorMate: nivel.obstaculosPorMate ?? OBSTACULOS_POR_MATE,
   }
 }
 
@@ -135,7 +137,7 @@ export function actualizarNivel(estado, accion) {
 
       // El mate sale justo en la mitad del hueco entre dos obstáculos:
       // lejos de los dos, así se agarra corriendo sin chocar nada
-      if (obstaculosCreados % OBSTACULOS_POR_MATE === 0) {
+      if (obstaculosCreados % estado.obstaculosPorMate === 0) {
         proximoMate = tiempo + (proximoObstaculo - tiempo) / 2
       }
     }

@@ -4,26 +4,30 @@ import Colectivo from "./ilustraciones/Colectivo"
 import portada from "../assets/portada.jpg"
 
 // Muestra cómo terminó el nivel. Hay tres casos:
-//   1. Ganaste Palermo   → botón "Seguir a Recoleta"
-//   2. Ganaste Recoleta  → victoria final (completaste los dos niveles)
-//   3. Perdiste          → "Reintentar" repite el mismo nivel
-function ResultScreen({ nombre, resultado, nivel, onReintentar, onSeguir, onJugarDeNuevo }) {
+//   1. Ganaste y hay otro barrio  → "Seguir a Recoleta" / "Seguir a Retiro"
+//   2. Ganaste el último (Retiro) → victoria final: ¡TRES DE TRES!
+//   3. Perdiste                   → "Reintentar" repite el mismo nivel
+// Props: "nivel" es la ficha del nivel que se jugó y "siguiente" la del próximo
+// (null si no hay más). Las funciones on... las maneja App.
+function ResultScreen({ nombre, resultado, nivel, siguiente, onReintentar, onSeguir, onJugarDeNuevo }) {
   const gano = resultado === "ganaste"
-  const esElUltimoNivel = nivel.numero === 2
-  const ganoTodo = gano && esElUltimoNivel
+  const ganoTodo = gano && siguiente === null
 
   let pildora = `NIVEL ${nivel.numero} · ${nivel.nombre}`
   let titulo = "¡SE TE FUE EL BONDI!"
   let mensaje = `Te quedaste sin vidas, ${nombre}. Tranqui, en 20 minutos pasa otro... o no.`
 
   if (ganoTodo) {
-    pildora = "PALERMO ✓ · RECOLETA ✓"
-    titulo = "¡DOS DE DOS!"
-    mensaje = `¡Sos un fenómeno, ${nombre}! Alcanzaste el bondi en Palermo y en Recoleta. Ni el chofer lo puede creer.`
+    pildora = "PALERMO ✓ · RECOLETA ✓ · RETIRO ✓"
+    titulo = "¡TRES DE TRES!"
+    mensaje = `¡Sos leyenda, ${nombre}! Alcanzaste el bondi en Palermo, en Recoleta y en Retiro. Ni el chofer lo puede creer.`
   } else if (gano) {
     pildora = `NIVEL ${nivel.numero} COMPLETADO ✓`
     titulo = "¡LO ALCANZASTE!"
-    mensaje = `¡Bien, ${nombre}! El chofer estaba de buen humor. Próxima parada: Recoleta, donde los bondis no esperan a nadie.`
+    mensaje =
+      siguiente.numero === 3
+        ? `¡Bien, ${nombre}! Último tramo: Retiro, donde todo el mundo corre para alcanzar algo.`
+        : `¡Bien, ${nombre}! El chofer estaba de buen humor. Próxima parada: ${siguiente.barrio}, donde los bondis no esperan a nadie.`
   }
 
   return (
@@ -41,7 +45,7 @@ function ResultScreen({ nombre, resultado, nivel, onReintentar, onSeguir, onJuga
 
         <div className="result-buttons">
           {ganoTodo && <GameButton texto="JUGAR DE NUEVO  →" onClick={onJugarDeNuevo} />}
-          {gano && !esElUltimoNivel && <GameButton texto="SEGUIR A RECOLETA  →" onClick={onSeguir} />}
+          {gano && !ganoTodo && <GameButton texto={`SEGUIR A ${siguiente.nombre}  →`} onClick={onSeguir} />}
           {!gano && <GameButton texto="REINTENTAR  →" onClick={onReintentar} />}
 
           {/* Link navega a otra ruta sin recargar la página (como un <a>, pero de React Router) */}

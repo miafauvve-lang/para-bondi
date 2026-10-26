@@ -5,12 +5,13 @@ import StartScreen from "./components/StartScreen"
 import Level1 from "./components/Level1"
 import ResultScreen from "./components/ResultScreen"
 import HowToPlayScreen from "./components/HowToPlayScreen"
-import { PALERMO, RECOLETA } from "./game/niveles"
+import { NIVELES, PALERMO } from "./game/niveles"
 
 // Las PANTALLAS del juego son rutas de React Router (cada una tiene su dirección):
 //   /           → Inicio (escribir el nombre)
 //   /juego      → Nivel 1 · Palermo
 //   /recoleta   → Nivel 2 · Recoleta (se habilita al ganar Palermo)
+//   /retiro     → Nivel 3 · Retiro (se habilita al ganar Recoleta)
 //   /resultado  → Ganaste o perdiste
 //   /como-jugar → Instrucciones (se llega desde el inicio)
 // Lo que pasa ADENTRO de una pantalla (saltar, perder una vida, agarrar un mate)
@@ -21,10 +22,10 @@ function App() {
   const [nombre, setNombre] = useState("")
   // "ganaste" o "perdiste"
   const [resultado, setResultado] = useState(null)
-  // En qué nivel terminó la última partida (1 = Palermo, 2 = Recoleta)
+  // En qué nivel terminó la última partida (1 = Palermo, 2 = Recoleta, 3 = Retiro)
   const [nivelTerminado, setNivelTerminado] = useState(1)
-  // Recoleta se desbloquea recién cuando ganás Palermo
-  const [recoletaHabilitada, setRecoletaHabilitada] = useState(false)
+  // Hasta qué nivel llegó el jugador: al ganar uno se desbloquea el siguiente
+  const [nivelMaximo, setNivelMaximo] = useState(1)
   // Cambiar este número hace que el nivel arranque de cero
   const [partida, setPartida] = useState(0)
 
@@ -34,7 +35,7 @@ function App() {
 
   function empezarJuego(nombreIngresado) {
     setNombre(nombreIngresado)
-    setRecoletaHabilitada(false) // jugador nuevo: arranca en Palermo
+    setNivelMaximo(1) // jugador nuevo: arranca en Palermo
     setPartida((n) => n + 1)
     navegar(PALERMO.ruta)
   }
@@ -44,27 +45,33 @@ function App() {
     (resultadoFinal, numeroNivel) => {
       setResultado(resultadoFinal)
       setNivelTerminado(numeroNivel)
-      if (resultadoFinal === "ganaste" && numeroNivel === 1) {
-        setRecoletaHabilitada(true)
+      // Ganaste y hay un nivel después: queda desbloqueado
+      if (resultadoFinal === "ganaste" && numeroNivel < NIVELES.length) {
+        setNivelMaximo((maximo) => Math.max(maximo, numeroNivel + 1))
       }
       navegar("/resultado")
     },
     [navegar],
   )
 
+  // La ficha del nivel que se acaba de jugar y la del siguiente (null si era el último).
+  // Como NIVELES empieza en 0 y los números en 1: el nivel 2 está en NIVELES[1].
+  const nivelActual = NIVELES[nivelTerminado - 1]
+  const nivelSiguiente = NIVELES[nivelTerminado] ?? null
+
   // Reintentar repite el MISMO nivel en el que perdiste
   function reintentar() {
     setPartida((n) => n + 1)
-    navegar(nivelTerminado === 2 ? RECOLETA.ruta : PALERMO.ruta)
+    navegar(nivelActual.ruta)
   }
 
-  // Ganaste Palermo: el mismo jugador pasa a Recoleta
-  function seguirARecoleta() {
+  // Ganaste: el mismo jugador pasa al barrio siguiente
+  function seguir() {
     setPartida((n) => n + 1)
-    navegar(RECOLETA.ruta)
+    navegar(nivelSiguiente.ruta)
   }
 
-  // Ganaste los dos niveles: volvés a empezar desde Palermo
+  // Ganaste los tres niveles: volvés a empezar desde Palermo
   function jugarDeNuevo() {
     setPartida((n) => n + 1)
     navegar(PALERMO.ruta)
@@ -79,30 +86,22 @@ function App() {
 
       <Route path="/como-jugar" element={<HowToPlayScreen />} />
 
-      <Route
-        path={PALERMO.ruta}
-        element={
-          // Si alguien entra directo a /juego sin haber puesto su nombre
-          // (o recarga la página), lo mandamos de vuelta al inicio.
-          nombre ? (
-            <Level1 key={partida} nombre={nombre} nivel={PALERMO} onTerminar={terminarNivel} />
-          ) : (
-            <Navigate to="/" replace />
-          )
-        }
-      />
-
-      <Route
-        path={RECOLETA.ruta}
-        element={
-          // A Recoleta solo se entra después de ganar Palermo
-          nombre && recoletaHabilitada ? (
-            <Level1 key={partida} nombre={nombre} nivel={RECOLETA} onTerminar={terminarNivel} />
-          ) : (
-            <Navigate to="/" replace />
-          )
-        }
-      />
+      {/* Una ruta por nivel (/juego, /recoleta, /retiro), todas con el mismo componente.
+          Si alguien entra directo sin nombre, o a un nivel que todavía no desbloqueó
+          (o recarga la página), lo mandamos de vuelta al inicio. */}
+      {NIVELES.map((nivel) => (
+        <Route
+          key={nivel.numero}
+          path={nivel.ruta}
+          element={
+            nombre && nivel.numero <= nivelMaximo ? (
+              <Level1 key={partida} nombre={nombre} nivel={nivel} onTerminar={terminarNivel} />
+            ) : (
+              <Navigate to="/" replace />
+            )
+          }
+        />
+      ))}
 
       <Route
         path="/resultado"
@@ -111,9 +110,10 @@ function App() {
             <ResultScreen
               nombre={nombre}
               resultado={resultado}
-              nivel={nivelTerminado === 2 ? RECOLETA : PALERMO}
+              nivel={nivelActual}
+              siguiente={nivelSiguiente}
               onReintentar={reintentar}
-              onSeguir={seguirARecoleta}
+              onSeguir={seguir}
               onJugarDeNuevo={jugarDeNuevo}
             />
           ) : (
