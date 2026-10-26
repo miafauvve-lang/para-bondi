@@ -418,6 +418,15 @@
   to { background-position: -8cqw 0; }
 }
 
+/* Cada nivel corre a su ritmo: --ritmo viene de Level1.jsx (Palermo = 1).
+   Dividir la duración hace que el fondo se mueva igual de rápido que los obstáculos.
+   En Palermo queda todo exactamente como antes. */
+.skyline { animation-duration: calc(40s / var(--ritmo, 1)); }
+.barrio { animation-duration: calc(10s / var(--ritmo, 1)); }
+.vereda { animation-duration: calc(0.25s / var(--ritmo, 1)); }
+.cordon { animation-duration: calc(0.5s / var(--ritmo, 1)); }
+.linea-calle { animation-duration: calc(0.4s / var(--ritmo, 1)); }
+
 /* Personajes y objetos: se ubican por su centro */
 .sprite {
   position: absolute;

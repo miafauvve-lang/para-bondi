@@ -1,3 +1,5 @@
+// La pantalla de juego. Se usa para los DOS niveles (Palermo y Recoleta):
+// lo que cambia entre uno y otro llega en la prop "nivel" (ver game/niveles.js).
 import { useEffect, useReducer } from "react"
 import GameHeader from "./GameHeader"
 import GameButton from "./GameButton"
@@ -8,6 +10,7 @@ import Parada from "./ilustraciones/Parada"
 import Obstaculo from "./ilustraciones/Obstaculo"
 import Mate from "./ilustraciones/Mate"
 import Barrio from "./ilustraciones/Barrio"
+import BarrioRecoleta from "./ilustraciones/BarrioRecoleta"
 import Skyline from "./ilustraciones/Skyline"
 import {
   TICK,
@@ -15,14 +18,17 @@ import {
   DURACION_SALTO,
   VIDAS_MAXIMAS,
   JUGADOR_X,
-  estadoInicial,
+  VELOCIDAD,
+  crearEstadoInicial,
   actualizarNivel,
   estaEnElAire,
   esInmune,
 } from "../game/nivel1"
 
-function Level1({ nombre, onTerminar }) {
-  const [estado, dispatch] = useReducer(actualizarNivel, estadoInicial)
+function Level1({ nombre, nivel, onTerminar }) {
+  // El estado arranca SIEMPRE de cero, armado con la ficha del nivel
+  // (tiempo 0, 3 vidas, sin obstáculos, con la velocidad de ese barrio)
+  const [estado, dispatch] = useReducer(actualizarNivel, nivel, crearEstadoInicial)
 
   // El "reloj" del juego: cada TICK ms avanza todo un poquito
   useEffect(() => {
@@ -46,9 +52,10 @@ function Level1({ nombre, onTerminar }) {
   // Cuando termina el nivel, avisamos a App (con una pausita para ver el final)
   useEffect(() => {
     if (!estado.resultado) return
-    const espera = setTimeout(() => onTerminar(estado.resultado), 800)
+    // Le contamos a App cómo terminó y en qué nivel
+    const espera = setTimeout(() => onTerminar(estado.resultado, nivel.numero), 800)
     return () => clearTimeout(espera)
-  }, [estado.resultado, onTerminar])
+  }, [estado.resultado, onTerminar, nivel.numero])
 
   function saltar() {
     dispatch({ tipo: "saltar" })
@@ -71,13 +78,19 @@ function Level1({ nombre, onTerminar }) {
   const bondiX = 74 - tramoFinal * (74 - (paradaX - 6))
   const bondiSeVa = estado.resultado === "perdiste"
 
+  // Cada barrio tiene su fondo; todo lo demás es igual
+  const Fondo = nivel.numero === 2 ? BarrioRecoleta : Barrio
+  // Qué tan rápido va este nivel comparado con Palermo (1 = igual, 1.13 = 13 % más rápido).
+  // App.css lo usa para que la vereda y el barrio se muevan al mismo ritmo que los obstáculos.
+  const ritmo = nivel.velocidad / VELOCIDAD
+
   return (
     <div className={`pantalla-juego ${estado.resultado ? "terminado" : ""}`}>
       <header className="barra-juego">
         <GameHeader tamano="chico" />
 
         <Marcador
-          nivel="1 · PALERMO"
+          nivel={`${nivel.numero} · ${nivel.nombre}`}
           tiempo={reloj}
           vidas={estado.vidas}
           vidasMaximas={VIDAS_MAXIMAS}
@@ -93,7 +106,7 @@ function Level1({ nombre, onTerminar }) {
         <div
           className="escena"
           onPointerDown={saltar}
-          style={{ "--duracion-salto": `${DURACION_SALTO}ms` }}
+          style={{ "--duracion-salto": `${DURACION_SALTO}ms`, "--ritmo": ritmo }}
         >
           <div className="capa nubes" />
           <div className="capa pista skyline">
@@ -101,8 +114,8 @@ function Level1({ nombre, onTerminar }) {
             <Skyline />
           </div>
           <div className="capa pista barrio">
-            <Barrio />
-            <Barrio />
+            <Fondo />
+            <Fondo />
           </div>
           <div className="capa vereda" />
           <div className="capa cordon" />

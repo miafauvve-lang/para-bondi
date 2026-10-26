@@ -17,7 +17,7 @@ function Ventana({ x, y, persiana = "#3F7D63" }) {
   )
 }
 
-function Balcon({ x, y, ancho }) {
+export function Balcon({ x, y, ancho }) {
   const barrotes = []
   for (let bx = x + 6; bx < x + ancho; bx += 7) barrotes.push(bx)
   return (
@@ -58,7 +58,7 @@ function Toldo({ x, y, ancho, color }) {
   )
 }
 
-function Negocio({ x, ancho, cartel, colorToldo }) {
+export function Negocio({ x, ancho, cartel, colorToldo }) {
   return (
     <g>
       <rect x={x + 12} y="180" width={ancho - 24} height="22" rx="3" fill={CREMA} {...trazo} />
@@ -100,7 +100,7 @@ function Casa({ x, ancho, alto, color, puerta = "#3F7D63", persiana, children })
   )
 }
 
-function Arbol({ x }) {
+export function Arbol({ x }) {
   return (
     <g>
       <path d={`M${x} 262 V170`} stroke={AZUL_OSCURO} strokeWidth="13" strokeLinecap="round" />
