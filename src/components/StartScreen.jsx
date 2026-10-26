@@ -1,4 +1,5 @@
 import { useState } from "react"
+import { Link } from "react-router-dom"
 import GameButton from "./GameButton"
 import GameHeader from "./GameHeader"
 import portada from "../assets/portada.jpg"
@@ -44,6 +45,10 @@ function StartScreen({ onStart, nombreInicial = "" }) {
             <p className="hint">Escribí tu nombre para poder arrancar.</p>
           )}
         </form>
+
+        <Link to="/como-jugar" className="game-button game-button-secundario link-claro">
+          ¿Cómo se juega?
+        </Link>
       </div>
     </div>
   )

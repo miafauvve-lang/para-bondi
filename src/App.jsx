@@ -4,11 +4,13 @@ import "./App.css"
 import StartScreen from "./components/StartScreen"
 import Level1 from "./components/Level1"
 import ResultScreen from "./components/ResultScreen"
+import HowToPlayScreen from "./components/HowToPlayScreen"
 
 // Las PANTALLAS del juego son rutas de React Router (cada una tiene su dirección):
 //   /           → Inicio (escribir el nombre)
 //   /juego      → Nivel 1
 //   /resultado  → Ganaste o perdiste
+//   /como-jugar → Instrucciones (se llega desde el inicio)
 // Lo que pasa ADENTRO de una pantalla (saltar, perder una vida, agarrar un mate)
 // no cambia la ruta: es estado interno de esa pantalla (ver Level1.jsx).
 
@@ -50,6 +52,8 @@ function App() {
         path="/"
         element={<StartScreen onStart={empezarJuego} nombreInicial={nombre} />}
       />
+
+      <Route path="/como-jugar" element={<HowToPlayScreen />} />
 
       <Route
         path="/juego"
