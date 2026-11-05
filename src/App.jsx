@@ -1,130 +1,237 @@
 import { useCallback, useState } from "react"
-import { Navigate, Route, Routes, useNavigate } from "react-router-dom"
+import { Navigate, Route, Routes, useNavigate, useParams } from "react-router-dom"
 import "./App.css"
 import StartScreen from "./components/StartScreen"
-import Level1 from "./components/Level1"
-import ResultScreen from "./components/ResultScreen"
+import BienvenidaScreen from "./components/BienvenidaScreen"
+import MenuScreen from "./components/MenuScreen"
+import TutorialScreen from "./components/TutorialScreen"
+import NivelesScreen from "./components/NivelesScreen"
+import PantallaNivel from "./components/PantallaNivel"
+import VictoriaScreen from "./components/VictoriaScreen"
+import DerrotaScreen from "./components/DerrotaScreen"
 import HowToPlayScreen from "./components/HowToPlayScreen"
-import { NIVELES, PALERMO } from "./game/niveles"
+import { NIVELES, PALERMO, nivelPorId } from "./game/niveles"
+import { leerJugadorActual, leerPerfil, guardarPerfil, totales } from "./game/progreso"
 
 // Las PANTALLAS del juego son rutas de React Router (cada una tiene su dirección):
-//   /           → Inicio (escribir el nombre)
-//   /juego      → Nivel 1 · Palermo
-//   /recoleta   → Nivel 2 · Recoleta (se habilita al ganar Palermo)
-//   /retiro     → Nivel 3 · Retiro (se habilita al ganar Recoleta)
-//   /resultado  → Ganaste o perdiste
-//   /como-jugar → Instrucciones (se llega desde el inicio)
-// Lo que pasa ADENTRO de una pantalla (saltar, perder una vida, agarrar un mate)
-// no cambia la ruta: es estado interno de esa pantalla (ver Level1.jsx).
+//   /                → Portada: escribir el nombre (o seguir con el guardado)
+//   /bienvenida      → La historia y el objetivo
+//   /menu            → Menú principal
+//   /tutorial        → Práctica guiada (no saca vidas)
+//   /niveles         → Elegir barrio (bloqueados / desbloqueados / récords)
+//   /nivel/:barrio   → El juego: /nivel/palermo, /nivel/recoleta, /nivel/retiro
+//   /victoria        → Ganaste: puntaje + anticipo del barrio siguiente
+//   /derrota         → Perdiste: puntaje + consejo + reintentar
+//   /como-jugar      → Reglas de consulta
+// Lo que pasa ADENTRO del nivel (saltar, pausar, la cuenta regresiva) no cambia
+// la ruta: es estado interno de PantallaNivel.
 
 function App() {
-  // El nombre del jugador (se guarda al apretar "¡A correr!")
-  const [nombre, setNombre] = useState("")
-  // "ganaste" o "perdiste"
-  const [resultado, setResultado] = useState(null)
-  // En qué nivel terminó la última partida (1 = Palermo, 2 = Recoleta, 3 = Retiro)
-  const [nivelTerminado, setNivelTerminado] = useState(1)
-  // Hasta qué nivel llegó el jugador: al ganar uno se desbloquea el siguiente
-  const [nivelMaximo, setNivelMaximo] = useState(1)
-  // Cambiar este número hace que el nivel arranque de cero
+  // El nombre del jugador. Arranca vacío: hay que entrar por la portada
+  // (o por "Seguir como...", que recupera el último jugador guardado).
+  const [nombre, setNombre] = useState(() => leerJugadorActual())
+  // El avance de ese jugador (barrios desbloqueados, récords), guardado en el navegador
+  const [perfil, setPerfil] = useState(() => leerPerfil(leerJugadorActual()))
+  // Cómo terminó la última partida (solo en memoria: si recargás /victoria, vas al menú)
+  const [ultima, setUltima] = useState(null)
+  // Cambiar este número hace que el nivel arranque de cero (reintentar / reiniciar)
   const [partida, setPartida] = useState(0)
 
   // useNavigate nos da una función para cambiar de ruta desde el código
-  // (por ejemplo, cuando termina el nivel, sin que nadie haga clic en un link)
   const navegar = useNavigate()
 
-  function empezarJuego(nombreIngresado) {
-    setNombre(nombreIngresado)
-    setNivelMaximo(1) // jugador nuevo: arranca en Palermo
-    setPartida((n) => n + 1)
-    navegar(PALERMO.ruta)
-  }
-
-  // useCallback evita que la función cambie en cada render del nivel
-  const terminarNivel = useCallback(
-    (resultadoFinal, numeroNivel) => {
-      setResultado(resultadoFinal)
-      setNivelTerminado(numeroNivel)
-      // Ganaste y hay un nivel después: queda desbloqueado
-      if (resultadoFinal === "ganaste" && numeroNivel < NIVELES.length) {
-        setNivelMaximo((maximo) => Math.max(maximo, numeroNivel + 1))
-      }
-      navegar("/resultado")
+  // Cada cambio de avance se guarda al toque en el navegador
+  const actualizarPerfil = useCallback(
+    (cambio) => {
+      setPerfil((anterior) => {
+        const nuevo = { ...anterior, ...cambio(anterior) }
+        guardarPerfil(nombre, nuevo)
+        return nuevo
+      })
     },
-    [navegar],
+    [nombre],
   )
 
-  // La ficha del nivel que se acaba de jugar y la del siguiente (null si era el último).
-  // Como NIVELES empieza en 0 y los números en 1: el nivel 2 está en NIVELES[1].
-  const nivelActual = NIVELES[nivelTerminado - 1]
-  const nivelSiguiente = NIVELES[nivelTerminado] ?? null
-
-  // Reintentar repite el MISMO nivel en el que perdiste
-  function reintentar() {
-    setPartida((n) => n + 1)
-    navegar(nivelActual.ruta)
+  function entrarConNombre(nombreIngresado) {
+    setNombre(nombreIngresado)
+    const perfilGuardado = leerPerfil(nombreIngresado)
+    setPerfil(perfilGuardado)
+    guardarPerfil(nombreIngresado, perfilGuardado)
+    setUltima(null)
+    navegar("/bienvenida")
   }
 
-  // Ganaste: el mismo jugador pasa al barrio siguiente
-  function seguir() {
+  function jugarNivel(id) {
     setPartida((n) => n + 1)
-    navegar(nivelSiguiente.ruta)
+    navegar(`/nivel/${id}`)
   }
 
-  // Ganaste los tres niveles: volvés a empezar desde Palermo
-  function jugarDeNuevo() {
-    setPartida((n) => n + 1)
-    navegar(PALERMO.ruta)
-  }
+  const marcarTutorialVisto = useCallback(() => {
+    actualizarPerfil(() => ({ tutorialVisto: true }))
+  }, [actualizarPerfil])
+
+  // Cuando termina un nivel: guardamos récord y desbloqueos y vamos a la pantalla que corresponde
+  const terminarNivel = useCallback(
+    (ficha, resumen) => {
+      const gano = resumen.resultado === "ganaste"
+      const recordAnterior = perfil.records[ficha.id]
+      const nuevoRecord = gano && (!recordAnterior || resumen.total > recordAnterior.total)
+
+      if (gano) {
+        actualizarPerfil((anterior) => ({
+          nivelMaximo: Math.min(NIVELES.length, Math.max(anterior.nivelMaximo, ficha.numero + 1)),
+          // El récord guarda tu mejor puntaje y tus mejores estrellas en ese barrio
+          records: {
+            ...anterior.records,
+            [ficha.id]: {
+              total: Math.max(resumen.total, recordAnterior?.total ?? 0),
+              estrellas: Math.max(resumen.estrellas, recordAnterior?.estrellas ?? 0),
+            },
+          },
+        }))
+      }
+
+      setUltima({ nivelId: ficha.id, resumen, nuevoRecord })
+      navegar(gano ? "/victoria" : "/derrota", { replace: true })
+    },
+    [perfil.records, actualizarPerfil, navegar],
+  )
+
+  const fichaUltima = ultima ? nivelPorId(ultima.nivelId) : null
+  const siguiente = fichaUltima ? (NIVELES[fichaUltima.numero] ?? null) : null
+
+  // Si no hay nombre, las pantallas "de adentro" mandan a la portada
+  const conNombre = (pantalla) => (nombre ? pantalla : <Navigate to="/" replace />)
 
   return (
     <Routes>
       <Route
         path="/"
-        element={<StartScreen onStart={empezarJuego} nombreInicial={nombre} />}
-      />
-
-      <Route path="/como-jugar" element={<HowToPlayScreen />} />
-
-      {/* Una ruta por nivel (/juego, /recoleta, /retiro), todas con el mismo componente.
-          Si alguien entra directo sin nombre, o a un nivel que todavía no desbloqueó
-          (o recarga la página), lo mandamos de vuelta al inicio. */}
-      {NIVELES.map((nivel) => (
-        <Route
-          key={nivel.numero}
-          path={nivel.ruta}
-          element={
-            nombre && nivel.numero <= nivelMaximo ? (
-              <Level1 key={partida} nombre={nombre} nivel={nivel} onTerminar={terminarNivel} />
-            ) : (
-              <Navigate to="/" replace />
-            )
-          }
-        />
-      ))}
-
-      <Route
-        path="/resultado"
         element={
-          resultado ? (
-            <ResultScreen
-              nombre={nombre}
-              resultado={resultado}
-              nivel={nivelActual}
-              siguiente={nivelSiguiente}
-              onReintentar={reintentar}
-              onSeguir={seguir}
-              onJugarDeNuevo={jugarDeNuevo}
-            />
-          ) : (
-            <Navigate to="/" replace />
-          )
+          <StartScreen
+            onStart={entrarConNombre}
+            jugadorGuardado={nombre}
+            onSeguir={() => navegar("/menu")}
+          />
         }
       />
 
-      {/* Cualquier otra dirección (por ejemplo /hola) vuelve al inicio */}
+      <Route
+        path="/bienvenida"
+        element={conNombre(
+          <BienvenidaScreen
+            nombre={nombre}
+            onPracticar={() => navegar("/tutorial")}
+            onMenu={() => navegar("/menu")}
+          />,
+        )}
+      />
+
+      <Route
+        path="/menu"
+        element={conNombre(
+          <MenuScreen
+            nombre={nombre}
+            perfil={perfil}
+            onJugar={jugarNivel}
+            onCambiarJugador={() => navegar("/")}
+          />,
+        )}
+      />
+
+      <Route
+        path="/tutorial"
+        element={conNombre(
+          <TutorialScreen
+            nombre={nombre}
+            onTerminarTutorial={marcarTutorialVisto}
+            onIrAPalermo={() => jugarNivel(PALERMO.id)}
+            onSalir={() => navegar("/menu")}
+          />,
+        )}
+      />
+
+      <Route path="/niveles" element={conNombre(<NivelesScreen perfil={perfil} onJugar={jugarNivel} />)} />
+
+      <Route
+        path="/nivel/:barrio"
+        element={conNombre(
+          <RutaNivel
+            nombre={nombre}
+            perfil={perfil}
+            partida={partida}
+            onTerminar={terminarNivel}
+            onReiniciar={() => setPartida((n) => n + 1)}
+            onSalir={() => navegar("/menu")}
+          />,
+        )}
+      />
+
+      <Route
+        path="/victoria"
+        element={conNombre(
+          ultima?.resumen.resultado === "ganaste" ? (
+            <VictoriaScreen
+              nombre={nombre}
+              ficha={fichaUltima}
+              siguiente={siguiente}
+              resumen={ultima.resumen}
+              nuevoRecord={ultima.nuevoRecord}
+              totalGeneral={totales(perfil).puntos}
+              onSeguir={() => jugarNivel(siguiente.id)}
+              onRepetir={() => jugarNivel(fichaUltima.id)}
+            />
+          ) : (
+            <Navigate to="/menu" replace />
+          ),
+        )}
+      />
+
+      <Route
+        path="/derrota"
+        element={conNombre(
+          ultima?.resumen.resultado === "perdiste" ? (
+            <DerrotaScreen
+              nombre={nombre}
+              ficha={fichaUltima}
+              resumen={ultima.resumen}
+              onReintentar={() => jugarNivel(fichaUltima.id)}
+            />
+          ) : (
+            <Navigate to="/menu" replace />
+          ),
+        )}
+      />
+
+      <Route path="/como-jugar" element={<HowToPlayScreen volverA={nombre ? "/menu" : "/"} />} />
+
+      {/* Cualquier otra dirección (por ejemplo /hola o la vieja /juego) vuelve al inicio */}
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
+  )
+}
+
+// La ruta /nivel/:barrio lee el barrio de la dirección con useParams.
+// Si el barrio no existe vuelve a /niveles; si está bloqueado, también.
+function RutaNivel({ nombre, perfil, partida, onTerminar, onReiniciar, onSalir }) {
+  const { barrio } = useParams()
+  const ficha = nivelPorId(barrio)
+
+  // onTerminar de App necesita saber QUÉ nivel terminó
+  const terminar = useCallback((resumen) => onTerminar(ficha, resumen), [onTerminar, ficha])
+
+  if (!ficha || ficha.numero > perfil.nivelMaximo) return <Navigate to="/niveles" replace />
+
+  return (
+    <PantallaNivel
+      // La key cambia al reintentar o cambiar de barrio: React arma el nivel de cero
+      key={`${ficha.id}-${partida}`}
+      nombre={nombre}
+      ficha={ficha}
+      onTerminar={terminar}
+      onReiniciar={onReiniciar}
+      onSalir={onSalir}
+    />
   )
 }
 

@@ -22,3 +22,6 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Respaldo local antes de los cambios del Momento 3
+respaldo-*.zip

@@ -63,13 +63,83 @@ function Cono() {
   )
 }
 
-const DIBUJOS = { baldosa: Baldosa, perro: Perro, basura: Basura, cono: Cono }
+// Un perrito chico (para la jauría del paseador), mirando a la izquierda
+function Perrito({ x, color, oreja }) {
+  return (
+    <g transform={`translate(${x} 0)`}>
+      <path d="M22 54 V64 M30 55 V64" stroke={AZUL_OSCURO} strokeWidth="6" strokeLinecap="round" />
+      <path d="M22 54 V64 M30 55 V64" stroke={color} strokeWidth="3" strokeLinecap="round" />
+      <path className="cola" d="M34 48 Q42 42 40 36" fill="none" stroke={AZUL_OSCURO} strokeWidth="5" strokeLinecap="round" />
+      <path className="cola" d="M34 48 Q42 42 40 36" fill="none" stroke={color} strokeWidth="2.5" strokeLinecap="round" />
+      <ellipse cx="27" cy="50" rx="10" ry="7" fill={color} {...trazo} strokeWidth="2.5" />
+      <path d="M8 46 Q8 36 16 36 Q23 36 23 44 Q23 50 16 50 L10 50 Q5 50 8 46 Z" fill={color} {...trazo} strokeWidth="2.5" />
+      <path d="M16 36 Q20 30 22 40" fill={oreja} {...trazo} strokeWidth="2" />
+      <circle cx="7" cy="45" r="2" fill={AZUL_OSCURO} />
+      <circle cx="13" cy="42" r="1.5" fill={AZUL_OSCURO} />
+      <path d="M17 46 L22 49" stroke="#E6403A" strokeWidth="3" />
+    </g>
+  )
+}
+
+// Paseador de perros (Recoleta): una jauría con correas que ocupa media vereda.
+// Del paseador solo se ve la mano arriba a la derecha: lo que hay que saltar son los perros.
+function Paseador() {
+  return (
+    <>
+      {/* Correas: salen de cada collar y se juntan en la mano */}
+      <path d="M20 48 Q60 10 112 8 M58 48 Q80 20 112 8 M96 48 Q104 24 112 8" fill="none" stroke="#E6403A" strokeWidth="2" />
+      <Perrito x={0} color="#C98A4B" oreja="#8B5A2B" />
+      <Perrito x={38} color="#FFF4D6" oreja="#C98A4B" />
+      <Perrito x={76} color="#3A3F48" oreja="#1C2026" />
+      {/* La mano del paseador, con la manga de la campera */}
+      <rect x="106" y="0" width="16" height="10" rx="3" fill="#53C9AF" {...trazo} strokeWidth="2.5" />
+      <circle cx="112" cy="11" r="5" fill="#E8B48A" {...trazo} strokeWidth="2.5" />
+    </>
+  )
+}
+
+// Moto de delivery (Retiro): viene de frente, más rápido que todo lo demás
+function Moto() {
+  return (
+    <>
+      {/* Rayas de velocidad atrás */}
+      <path className="rayas-velocidad" d="M96 40 H108 M94 52 H110 M98 64 H106" stroke="#FFFFFF" strokeWidth="3" strokeLinecap="round" />
+      {/* Ruedas */}
+      <circle cx="18" cy="74" r="12" fill="#2B2F36" stroke={AZUL_OSCURO} strokeWidth="3" />
+      <circle cx="18" cy="74" r="4" fill="#C9CED6" />
+      <circle cx="76" cy="74" r="12" fill="#2B2F36" stroke={AZUL_OSCURO} strokeWidth="3" />
+      <circle cx="76" cy="74" r="4" fill="#C9CED6" />
+      {/* Cuerpo de la moto */}
+      <path d="M14 60 Q20 50 40 52 L70 52 Q84 52 86 66 L30 70 Q20 70 14 60 Z" fill="#E6403A" {...trazo} />
+      <path d="M18 74 L28 54 M10 46 L22 50" {...trazo} />
+      <circle cx="12" cy="56" r="4" fill="#FFC53D" stroke={AZUL_OSCURO} strokeWidth="2" />
+      {/* Caja de delivery */}
+      <rect x="62" y="22" width="30" height="28" rx="4" fill="#FF8A3D" {...trazo} />
+      <path d="M70 32 Q77 26 84 32 Q77 42 70 32 Z" fill="#FFF4D6" />
+      {/* Repartidor: casco, cuerpo y brazo al manubrio */}
+      <path d="M40 52 Q38 34 48 30 L58 32 Q62 44 60 52 Z" fill="#102A43" {...trazo} strokeWidth="2.5" />
+      <path d="M44 36 Q32 40 22 48" fill="none" stroke={AZUL_OSCURO} strokeWidth="6" strokeLinecap="round" />
+      <circle cx="50" cy="20" r="11" fill="#E6403A" {...trazo} />
+      <path d="M40 20 Q42 14 50 14 L50 24 Q44 26 40 20 Z" fill="#2B4A66" stroke={AZUL_OSCURO} strokeWidth="2" />
+    </>
+  )
+}
+
+// Cada dibujo con su "lienzo": los nuevos son más anchos
+const DIBUJOS = {
+  baldosa: { Dibujo: Baldosa, ancho: 70, alto: 70 },
+  perro: { Dibujo: Perro, ancho: 70, alto: 70 },
+  basura: { Dibujo: Basura, ancho: 70, alto: 70 },
+  cono: { Dibujo: Cono, ancho: 70, alto: 70 },
+  paseador: { Dibujo: Paseador, ancho: 124, alto: 70 },
+  moto: { Dibujo: Moto, ancho: 112, alto: 90 },
+}
 
 function Obstaculo({ tipo }) {
-  const Dibujo = DIBUJOS[tipo] ?? Cono
+  const { Dibujo, ancho, alto } = DIBUJOS[tipo] ?? DIBUJOS.cono
   return (
-    <svg viewBox="0 0 70 70" className={`obstaculo-dibujo obstaculo-${tipo}`} aria-hidden="true">
-      <ellipse cx="35" cy="66" rx="26" ry="3" fill={AZUL_OSCURO} opacity="0.18" />
+    <svg viewBox={`0 0 ${ancho} ${alto}`} className={`obstaculo-dibujo obstaculo-${tipo}`} aria-hidden="true">
+      <ellipse cx={ancho / 2} cy={alto - 4} rx={ancho * 0.38} ry="3" fill={AZUL_OSCURO} opacity="0.18" />
       <Dibujo />
     </svg>
   )

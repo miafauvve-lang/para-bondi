@@ -1,4 +1,5 @@
-// variante: "principal" (rojo), "saltar" (amarillo) o "secundario" (solo texto)
+// variante: "principal" (rojo), "saltar" (amarillo), "claro" (crema),
+// "secundario" (solo texto, sobre fondo claro) o "secundario-claro" (solo texto, sobre fondo oscuro)
 function GameButton({ texto, onClick, type = "button", disabled = false, variante = "principal" }) {
   return (
     <button

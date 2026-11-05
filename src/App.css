@@ -428,7 +428,7 @@
   to { background-position: -8cqw 0; }
 }
 
-/* Cada nivel corre a su ritmo: --ritmo viene de Level1.jsx (Palermo = 1).
+/* Cada nivel corre a su ritmo: --ritmo viene de PantallaNivel.jsx (Palermo = 1).
    Dividir la duración hace que el fondo se mueva igual de rápido que los obstáculos.
    En Palermo queda todo exactamente como antes. */
 .skyline { animation-duration: calc(40s / var(--ritmo, 1)); }
@@ -605,7 +605,7 @@
   to { opacity: 0.3; }
 }
 
-/* La duración sale de DURACION_SALTO (nivel1.js), así el dibujo y las reglas coinciden */
+/* La duración sale de DURACION_SALTO (reglas.js), así el dibujo y las reglas coinciden */
 .corredora.jumping {
   animation: saltar var(--duracion-salto, 1150ms) linear;
 }
@@ -653,8 +653,8 @@
   to { transform: rotate(360deg); }
 }
 
-/* Cuando termina el nivel, todo se queda quieto */
-.pantalla-juego.terminado * {
+/* Durante la cuenta regresiva, la pausa o al terminar, todo se queda quieto */
+.pantalla-juego.quieto .escena * {
   animation-play-state: paused !important;
 }
 
@@ -807,13 +807,6 @@
 
 /* ---------- Pantalla "¿Cómo se juega?" ---------- */
 
-/* El link secundario sobre el fondo azul de la portada */
-.link-claro {
-  color: var(--crema);
-  margin-top: 18px;
-  padding-left: 0;
-}
-
 .tarjeta-como-jugar {
   max-width: 620px;
   text-align: left;
@@ -899,7 +892,7 @@
 
 .fila-dibujos {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(6, 1fr);
   gap: 8px;
   margin-top: 10px;
 }
@@ -918,11 +911,756 @@
   font-size: 11px;
   font-weight: 700;
   margin-top: 4px;
+  line-height: 1.2;
+}
+
+.fila-dibujos figcaption small {
+  display: block;
+  font-weight: 600;
+  color: var(--gris);
+  font-size: 10px;
+}
+
+.fila-dibujos .obstaculo-paseador,
+.fila-dibujos .obstaculo-moto {
+  width: 72px;
 }
 
 .tarjeta-como-jugar > .game-button {
   align-self: center;
   text-decoration: none;
+}
+
+
+/* ==========================================================
+   PANTALLAS NUEVAS (Momento 3)
+   Dos materiales, siempre con la paleta del mockup:
+   - "panel-vidrio": glassmorfismo azul sobre la portada desenfocada
+     (menú, bienvenida, niveles, pausa, cuenta regresiva)
+   - "tarjeta-resultado": papel crema, para leer datos (victoria, derrota)
+   ========================================================== */
+
+.numeros {
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- Botones nuevos ---------- */
+
+a.game-button {
+  text-decoration: none;
+  text-align: center;
+}
+
+a.game-button-secundario,
+a.game-button-secundario-claro {
+  text-decoration: underline;
+}
+
+.game-button-claro {
+  background: var(--crema);
+  color: var(--azul-oscuro);
+}
+
+.game-button-secundario-claro {
+  background: none;
+  border: none;
+  box-shadow: none;
+  color: var(--crema);
+  font-size: 15px;
+  padding: 8px 12px;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  display: inline-block;
+}
+
+.game-button-secundario-claro:hover,
+.game-button-secundario-claro:active {
+  box-shadow: none;
+  color: var(--amarillo);
+}
+
+.game-button-secundario {
+  text-underline-offset: 3px;
+}
+
+/* ---------- Vidrio ---------- */
+
+.panel-vidrio {
+  position: relative;
+  width: 100%;
+  max-width: 560px;
+  color: var(--crema);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  padding: 30px 34px 26px;
+  border-radius: 24px;
+  background: linear-gradient(160deg, rgba(39, 167, 231, 0.18), rgba(16, 42, 67, 0.62) 45%);
+  backdrop-filter: blur(16px) saturate(150%);
+  -webkit-backdrop-filter: blur(16px) saturate(150%);
+  border: 2px solid rgba(255, 244, 214, 0.32);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.25),
+    0 10px 0 rgba(16, 42, 67, 0.6),
+    0 28px 60px rgba(0, 0, 0, 0.35);
+  animation: aparecer 0.35s ease-out both;
+}
+
+@keyframes aparecer {
+  from { opacity: 0; transform: translateY(14px) scale(0.98); }
+  to { opacity: 1; transform: none; }
+}
+
+.panel-vidrio h2 {
+  margin: 0;
+  font-size: clamp(28px, 5vw, 40px);
+  font-weight: 800;
+  color: var(--amarillo);
+  letter-spacing: 0.02em;
+}
+
+.panel-vidrio p {
+  margin: 0;
+  font-weight: 700;
+  line-height: 1.45;
+}
+
+.panel-vidrio .logo-chico {
+  flex-direction: row;
+  gap: 6px;
+}
+
+.logo-mediano {
+  font-size: clamp(32px, 5.5vw, 46px);
+  flex-direction: row;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.texto-grande {
+  font-size: 17px;
+}
+
+.texto-grande strong {
+  color: var(--amarillo);
+}
+
+.subtitulo {
+  color: var(--crema-oscura);
+}
+
+.pildora-roja {
+  background: var(--rojo);
+  color: #ffffff;
+  border-radius: 999px;
+  padding: 8px 18px;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+}
+
+.panel-vidrio .pildora-verde {
+  color: var(--azul-oscuro);
+}
+
+/* ---------- Portada: seguir como... ---------- */
+
+.seguir-como {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  margin-bottom: 26px;
+}
+
+.seguir-como .hint {
+  color: var(--crema-oscura);
+}
+
+.portada .game-button-secundario-claro {
+  margin-top: 18px;
+  padding-left: 0;
+}
+
+/* ---------- Bienvenida ---------- */
+
+.claves {
+  list-style: none;
+  padding: 0;
+  margin: 4px 0 6px;
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.claves li {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 10px;
+  border-radius: 16px;
+  background: rgba(255, 244, 214, 0.1);
+  border: 1px solid rgba(255, 244, 214, 0.22);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.claves strong {
+  color: var(--amarillo);
+}
+
+.clave-dibujo {
+  width: 52px;
+  height: 52px;
+  display: grid;
+  place-items: end center;
+}
+
+.clave-dibujo svg {
+  display: block;
+  width: 100%;
+  max-height: 52px;
+  overflow: visible;
+}
+
+/* ---------- Menú ---------- */
+
+.saludo {
+  font-size: 18px;
+}
+
+.resumen-progreso {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 6px 16px;
+  border-radius: 999px;
+  background: rgba(16, 42, 67, 0.55);
+  border: 1px solid rgba(255, 244, 214, 0.25);
+  font-weight: 800;
+}
+
+.menu-opciones {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 12px;
+  width: min(100%, 340px);
+  margin-top: 6px;
+}
+
+/* ---------- Estrellas ---------- */
+
+.estrellas {
+  display: inline-flex;
+  gap: 2px;
+  line-height: 1;
+}
+
+.estrellas .llena {
+  color: var(--amarillo);
+  text-shadow: 0 2px 0 var(--azul-oscuro);
+}
+
+.estrellas .vacia {
+  color: rgba(106, 123, 136, 0.55);
+}
+
+.estrellas-chico {
+  font-size: 16px;
+}
+
+.estrellas-normal {
+  font-size: 24px;
+}
+
+.estrellas-grande {
+  font-size: 44px;
+  gap: 8px;
+  margin-top: -4px;
+}
+
+.estrellas-grande .llena {
+  animation: estrella 0.5s cubic-bezier(0.3, 1.6, 0.5, 1) both;
+}
+
+.estrellas-grande .llena:nth-child(2) { animation-delay: 0.15s; }
+.estrellas-grande .llena:nth-child(3) { animation-delay: 0.3s; }
+
+@keyframes estrella {
+  from { transform: scale(0) rotate(-40deg); }
+  to { transform: none; }
+}
+
+/* ---------- Selector de niveles ---------- */
+
+.pantalla-ancha .panel-vidrio {
+  max-width: 980px;
+}
+
+.tarjetas-niveles {
+  list-style: none;
+  padding: 0;
+  margin: 6px 0 0;
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+.tarjeta-nivel {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+  border-radius: 18px;
+  overflow: hidden;
+  background: var(--crema);
+  color: var(--azul-oscuro);
+  border: 3px solid var(--azul-oscuro);
+  box-shadow: 0 6px 0 var(--azul-oscuro);
+  transition: transform 0.15s;
+}
+
+.tarjeta-nivel:not(.bloqueado):hover {
+  transform: translateY(-4px);
+}
+
+.miniatura {
+  position: relative;
+  height: 112px;
+  overflow: hidden;
+  border-bottom: 3px solid var(--azul-oscuro);
+  background: linear-gradient(#27a7e7, #8fd3f4);
+}
+
+.cielo-mini-recoleta .miniatura {
+  background: linear-gradient(#4b9fdc, #a9d6ef);
+}
+
+.cielo-mini-retiro .miniatura {
+  background: linear-gradient(#5b8fd0, #f2b483);
+}
+
+.miniatura svg {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 100%;
+  width: auto;
+}
+
+.bloqueado .miniatura svg {
+  filter: grayscale(1) brightness(0.6);
+}
+
+.candado {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-size: 40px;
+}
+
+.tarjeta-nivel-texto {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 14px 16px 6px;
+}
+
+.tarjeta-nivel-texto p {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.tarjeta-nivel h3 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 800;
+}
+
+.nivel-numero {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  color: var(--rojo);
+}
+
+.dificultad {
+  color: var(--rojo);
+  letter-spacing: 3px;
+}
+
+.dificultad .apagado {
+  color: #d9c9a3;
+}
+
+.estado-nivel {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  font-weight: 800 !important;
+}
+
+.tarjeta-nivel .game-button {
+  margin: 10px 16px 18px;
+  font-size: 17px;
+  padding: 10px 18px;
+}
+
+.bloqueado .tarjeta-nivel-texto {
+  opacity: 0.75;
+}
+
+/* ---------- Juego: botón de pausa, puntos y carteles ---------- */
+
+.boton-pausa {
+  margin-left: auto;
+  width: 52px;
+  height: 52px;
+  font-family: inherit;
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: -2px;
+  color: var(--azul-oscuro);
+  background: var(--crema);
+  border: 3px solid var(--azul-oscuro);
+  outline: 2px solid var(--crema);
+  border-radius: 12px;
+  cursor: pointer;
+}
+
+.boton-pausa:hover {
+  background: var(--amarillo);
+}
+
+.boton-pausa:focus-visible {
+  outline: 4px solid var(--amarillo);
+}
+
+.chip-puntos {
+  background: var(--amarillo);
+  outline-color: var(--amarillo);
+  min-width: 132px;
+}
+
+.chip-racha {
+  margin-left: 6px;
+  padding: 1px 6px;
+  border-radius: 6px;
+  background: var(--rojo);
+  color: #ffffff;
+  animation: latir 0.4s ease-in-out;
+}
+
+.chip-titulo {
+  display: flex;
+  align-items: center;
+}
+
+/* Cartelitos que suben arriba de la corredora: +100, ¡+1 vida!, ¡Uy! */
+.cartel-flotante {
+  position: absolute;
+  bottom: 60%;
+  translate: -50% 0;
+  z-index: 5;
+  margin: 0;
+  white-space: nowrap;
+  border: 0.3cqw solid var(--azul-oscuro);
+  border-radius: 999px;
+  padding: 0.5cqw 1.6cqw;
+  font-size: clamp(13px, 1.9cqw, 24px);
+  font-weight: 800;
+  box-shadow: 0 0.4cqw 0 var(--azul-oscuro);
+  animation: subir-mensaje 0.9s ease-out both;
+}
+
+.cartel-vida {
+  background: var(--amarillo);
+  animation-duration: 1.2s;
+}
+
+.cartel-puntos {
+  background: #ffffff;
+  font-variant-numeric: tabular-nums;
+}
+
+.cartel-error {
+  background: var(--rojo);
+  color: #ffffff;
+  animation-duration: 1.6s;
+}
+
+/* Tutorial: "¡AHORA!" grande en el medio de la calle */
+.cartel-ahora {
+  position: absolute;
+  left: 24%;
+  bottom: 44%;
+  z-index: 6;
+  margin: 0;
+  padding: 0.6cqw 2.2cqw;
+  background: var(--verde-agua);
+  border: 0.35cqw solid var(--azul-oscuro);
+  border-radius: 1.4cqw;
+  box-shadow: 0 0.5cqw 0 var(--azul-oscuro);
+  font-size: clamp(18px, 3.6cqw, 44px);
+  font-weight: 800;
+  animation: latir 0.35s ease-in-out infinite;
+}
+
+.aliento.instruccion {
+  background: var(--azul-oscuro);
+  color: var(--crema);
+  border-color: var(--amarillo);
+  box-shadow: 0 0.5cqw 0 var(--amarillo);
+  max-width: 70%;
+}
+
+/* Aviso de moto (Retiro): cartel con bocina a la derecha */
+.aviso-moto {
+  position: absolute;
+  right: 2cqw;
+  bottom: 44%;
+  z-index: 6;
+  margin: 0;
+  padding: 0.6cqw 1.6cqw;
+  background: var(--rojo);
+  color: #ffffff;
+  border: 0.35cqw solid var(--azul-oscuro);
+  border-radius: 1.2cqw;
+  box-shadow: 0 0.5cqw 0 var(--azul-oscuro);
+  font-size: clamp(14px, 2.4cqw, 30px);
+  font-weight: 800;
+  animation: bocina 0.25s steps(2) infinite;
+}
+
+@keyframes bocina {
+  from { transform: rotate(-4deg) scale(1.05); }
+  to { transform: rotate(4deg) scale(0.95); }
+}
+
+/* Los obstáculos nuevos son más anchos (su dibujo y su "alcance") */
+.obstaculo-paseador {
+  width: 14cqw;
+}
+
+.obstaculo-moto {
+  width: 12cqw;
+  bottom: 26%;
+}
+
+/* ---------- Cuenta regresiva y pausa ---------- */
+
+.capa-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  background: rgba(16, 42, 67, 0.5);
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+}
+
+/* Sobre la escena (que tiene mucho detalle) el vidrio va más oscuro, para que se lea */
+.capa-overlay .panel-vidrio {
+  background: linear-gradient(160deg, rgba(39, 167, 231, 0.25), rgba(16, 42, 67, 0.85) 45%);
+}
+
+.panel-cuenta {
+  max-width: 460px;
+}
+
+.cuenta-meta {
+  font-size: 13px !important;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--verde-agua);
+}
+
+.hint-girar {
+  display: none;
+}
+
+.cuenta-lema {
+  font-size: 19px;
+}
+
+.cuenta-novedad {
+  font-size: 15px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: rgba(230, 64, 58, 0.25);
+  border: 1px solid rgba(255, 244, 214, 0.3);
+}
+
+.cuenta-novedad strong {
+  color: var(--amarillo);
+}
+
+.cuenta-numero {
+  font-size: 88px !important;
+  line-height: 1 !important;
+  color: var(--amarillo);
+  text-shadow: 0 6px 0 var(--azul-oscuro);
+  animation: cuenta 1s ease-out both;
+}
+
+@keyframes cuenta {
+  0% { transform: scale(1.8); opacity: 0; }
+  25% { transform: scale(1); opacity: 1; }
+  100% { transform: scale(0.9); opacity: 0.85; }
+}
+
+.panel-pausa {
+  max-width: 380px;
+}
+
+.panel-pausa .result-buttons {
+  width: 100%;
+  align-items: stretch;
+  margin-top: 8px;
+}
+
+/* ---------- Victoria y derrota ---------- */
+
+.tabla-puntaje {
+  position: relative;
+  width: 100%;
+  margin: 18px 0 4px;
+  padding: 10px 16px;
+  background: #ffffff;
+  border: 3px solid var(--azul-oscuro);
+  border-radius: 14px;
+}
+
+.tabla-puntaje dl {
+  margin: 0;
+}
+
+.tabla-puntaje dl > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 5px 0;
+  border-bottom: 1px dashed #d9c9a3;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.tabla-puntaje dt {
+  text-align: left;
+}
+
+.tabla-puntaje dd {
+  margin: 0;
+  font-weight: 800;
+}
+
+.tabla-puntaje .fila-total {
+  border-bottom: none;
+  font-size: 20px;
+  padding-top: 8px;
+}
+
+.tabla-puntaje .fila-total dd {
+  color: var(--rojo);
+}
+
+.sello-record {
+  display: inline-block;
+  margin: -24px 0 6px;
+  padding: 4px 12px;
+  background: var(--amarillo);
+  border: 3px solid var(--azul-oscuro);
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 800;
+  transform: rotate(6deg);
+  animation: latir 0.5s ease-in-out 3;
+}
+
+.proximo-desafio {
+  width: 100%;
+  margin-top: 14px;
+  padding: 12px 16px;
+  text-align: left;
+  border-radius: 14px;
+  background: var(--azul-oscuro);
+  color: var(--crema);
+  border: 3px solid var(--azul-oscuro);
+  box-shadow: inset 0 0 0 2px var(--verde-agua);
+}
+
+.proximo-desafio strong {
+  display: block;
+  font-size: 22px;
+  color: var(--amarillo);
+}
+
+.tarjeta-resultado .proximo-desafio p {
+  font-size: 15px;
+  font-weight: 600;
+  margin-top: 4px;
+}
+
+.proximo-desafio .nivel-numero {
+  color: var(--verde-agua);
+}
+
+.consejo {
+  width: 100%;
+  margin-top: 14px;
+  padding: 10px 14px;
+  text-align: left;
+  border-left: 6px solid var(--amarillo);
+  background: var(--crema-oscura);
+  border-radius: 8px;
+}
+
+.consejo strong {
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  color: var(--rojo);
+}
+
+.tarjeta-resultado .consejo p {
+  font-size: 15px;
+}
+
+.tarjeta-resultado .dato-chico {
+  font-size: 14px;
+  font-weight: 600;
+  margin-top: 12px;
+  color: var(--gris);
+}
+
+.tarjeta-resultado .resultado-colectivo {
+  margin: 16px 0 18px;
+  width: 200px;
+}
+
+.tarjeta-derrota {
+  border-color: var(--rojo);
+}
+
+.tarjeta-final {
+  border-color: var(--verde-agua);
+}
+
+.result-buttons .game-button-claro {
+  min-width: 240px;
 }
 
 /* ---------- Celulares ---------- */
@@ -967,5 +1705,90 @@
 
   .tarjeta-resultado {
     padding: 26px 18px 18px;
+  }
+
+  .panel-vidrio {
+    padding: 24px 16px 20px;
+  }
+
+  .claves {
+    grid-template-columns: 1fr;
+  }
+
+  .claves li {
+    flex-direction: row;
+    text-align: left;
+  }
+
+  .tarjetas-niveles {
+    grid-template-columns: 1fr;
+  }
+
+  .miniatura {
+    height: 84px;
+  }
+
+  .chip-puntos {
+    min-width: 0;
+  }
+
+  /* Arriba: logo y pausa en una fila, los cuatro marcadores abajo */
+  .barra-juego .chips {
+    order: 3;
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1.35fr 1fr 1fr 1fr;
+    gap: 6px;
+  }
+
+  .barra-juego .chip-valor {
+    font-size: 12px;
+    white-space: nowrap;
+  }
+
+  .barra-juego .chip {
+    padding: 3px 6px 4px;
+    outline: none;
+  }
+
+  .barra-juego .chip-titulo {
+    font-size: 8px;
+  }
+
+  .barra-juego .chip-vidas .corazones {
+    font-size: 15px;
+    gap: 2px;
+  }
+
+  .barra-juego .carita,
+  .barra-juego .chip-racha {
+    display: none;
+  }
+
+  .boton-pausa {
+    width: 44px;
+    height: 44px;
+  }
+
+  .fila-dibujos {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 700px) and (orientation: portrait) {
+  .hint-girar {
+    display: inline;
+    color: var(--amarillo);
+  }
+}
+
+/* Quien prefiere menos movimiento: sin animaciones decorativas */
+@media (prefers-reduced-motion: reduce) {
+  .panel-vidrio,
+  .estrellas-grande .llena,
+  .cartel-ahora,
+  .aviso-moto,
+  .sello-record {
+    animation: none;
   }
 }
